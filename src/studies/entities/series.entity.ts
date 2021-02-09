@@ -14,18 +14,18 @@ import { Image } from './image.entity';
 @Entity()
 export class Series {
   @PrimaryGeneratedColumn()
-  id: number;
+  id!: number;
 
   @Column()
-  fkId: number;
+  fkId!: number;
 
   @Column()
-  uid: string;
+  uid!: string;
 
   @ManyToOne(() => Study, (study) => study.series)
   @JoinColumn({ name: 'fkId' })
-  study: Study;
+  study!: Study;
 
   @OneToMany(() => Image, (image: Image) => image.series)
-  image: Image[];
+  image!: Image[];
 }

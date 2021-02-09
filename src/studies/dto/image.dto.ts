@@ -1,3 +1,3 @@
 export class StudyDto {
-  readonly uid: string;
+  readonly uid: string = '';
 }

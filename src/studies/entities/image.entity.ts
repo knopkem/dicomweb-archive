@@ -12,15 +12,15 @@ import { Series } from './series.entity';
 @Entity()
 export class Image {
   @PrimaryGeneratedColumn()
-  id: number;
+  id!: number;
 
   @Column()
-  fkId: number;
+  fkId!: number;
 
   @Column()
-  uid: string;
+  uid!: string;
 
   @ManyToOne(() => Series, (series) => series.image)
   @JoinColumn({ name: 'fkId' })
-  series: Series;
+  series!: Series;
 }

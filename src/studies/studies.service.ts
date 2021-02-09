@@ -23,11 +23,51 @@ export class StudiesService {
   }
 
   async createFromEntities(study: Study, series: Series, image: Image) {
-    const resStudy = await this.studyRepository.save(study);
+    /*
+    const resStudy = await getConnection()
+      .createQueryBuilder()
+      .insert()
+      .into(Study)
+      .values(study)
+      .orUpdate({ conflict_target: ['id', 'uid'], overwrite: [] })
+      .execute();
+
+    series.fkId = resStudy.identifiers['id'];
+    const resSeries = await getConnection()
+      .createQueryBuilder()
+      .insert()
+      .into(Series)
+      .values(series)
+      .orUpdate({ conflict_target: ['id', 'uid'], overwrite: [] })
+      .execute();
+
+    image.fkId = resSeries.identifiers['id'];
+    await getConnection()
+      .createQueryBuilder()
+      .insert()
+      .into(Image)
+      .values(image)
+      .orUpdate({ conflict_target: ['id', 'uid'], overwrite: [] })
+      .execute();
+      */
+
+    let resStudy = await this.studyRepository.findOne(study);
+    if (resStudy === undefined) {
+      resStudy = await this.studyRepository.save(study);
+    }
+    console.log('res', resStudy);
     series.fkId = resStudy.id;
-    const resSeries = await this.seriesRepository.save(series);
+    let resSeries = await this.seriesRepository.findOne(series);
+    if (!resSeries) {
+      resSeries = await this.seriesRepository.save(series);
+    }
     image.fkId = resSeries.id;
-    this.imageRepository.save(image);
+    const resImage = await this.imageRepository.findOne(image);
+    if (!resImage) {
+      this.imageRepository.save(image);
+    } else {
+      console.log('ignoring duplicate image');
+    }
   }
 
   findAll(): Promise<Study[]> {

@@ -4,6 +4,9 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { StudiesModule } from './studies/studies.module';
 import { FilesModule } from './files/files.module';
+import { Study } from './studies/entities/study.entity';
+import { Series } from './studies/entities/series.entity';
+import { Image } from './studies/entities/image.entity';
 
 @Module({
   imports: [
@@ -14,7 +17,7 @@ import { FilesModule } from './files/files.module';
       username: 'postgres',
       password: 'postgres',
       database: 'dicomweb',
-      autoLoadEntities: true,
+      entities: [Study, Series, Image],
       synchronize: true,
     }),
     StudiesModule,

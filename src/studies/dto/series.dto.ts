@@ -1,4 +1,4 @@
 export class SeriesDto {
-  readonly uid: string;
-  readonly fkId: number;
+  readonly uid: string = '';
+  readonly fkId: number = 0;
 }

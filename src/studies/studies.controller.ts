@@ -6,7 +6,7 @@ export class StudiesController {
   constructor(private readonly studiesService: StudiesService) {}
 
   @Get()
-  findAll(@Query() query) {
+  findAll(@Query() query: any) {
     console.log(query);
     return this.studiesService.findAll();
   }
@@ -22,7 +22,7 @@ export class StudiesController {
   }
 
   @Get(':studyUid/series')
-  findAllSeries(@Param() params) {
+  findAllSeries(@Param() params: any) {
     console.log(params);
     return this.studiesService.findAll();
   }

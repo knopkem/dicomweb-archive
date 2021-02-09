@@ -1,15 +1,25 @@
 {
-  "compilerOptions": {
-    "module": "commonjs",
-    "declaration": true,
-    "removeComments": true,
-    "emitDecoratorMetadata": true,
-    "experimentalDecorators": true,
-    "allowSyntheticDefaultImports": true,
-    "target": "es2017",
-    "sourceMap": true,
-    "outDir": "./dist",
-    "baseUrl": "./",
-    "incremental": true
+    "compilerOptions": {
+      "strict": true,
+      "module": "commonjs",
+      "declaration": true,
+      "removeComments": true,
+      "emitDecoratorMetadata": true,
+      "experimentalDecorators": true,
+      "allowSyntheticDefaultImports": true,
+      "target": "es2017",
+      "sourceMap": true,
+      "outDir": "./dist",
+      "baseUrl": "./",
+      "incremental": true,
+      "forceConsistentCasingInFileNames": true,
+      "importHelpers": true,
+      "paths": {
+        "tslib" : ["./node_modules/tslib/tslib.d.ts"]
+      }
+    },
+    "exclude": [
+      "node_modules", "test", "dist", "**/*spec.ts", "migrations"
+    ],
+    "include": [ "src"]
   }
-}

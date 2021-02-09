@@ -11,11 +11,11 @@ import { Series } from './series.entity';
 @Entity()
 export class Study {
   @PrimaryGeneratedColumn()
-  id: number;
+  id!: number;
 
   @Column()
-  uid: string;
+  uid!: string;
 
   @OneToMany(() => Series, (series: Series) => series.study)
-  series: Series[];
+  series!: Series[];
 }
