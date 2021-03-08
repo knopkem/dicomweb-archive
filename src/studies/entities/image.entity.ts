@@ -33,10 +33,10 @@ export class Image {
   numberOfFrames!: string;
 
   @Column({ nullable: true })
-  rows!: string;
+  rows!: number;
 
   @Column({ nullable: true })
-  columns!: string;
+  columns!: number;
 
   @Column({ nullable: true })
   windowWidth!: string;
@@ -54,22 +54,22 @@ export class Image {
   rescaleIntercept!: string;
 
   @Column({ nullable: true })
-  samplesPerPixel!: string;
+  samplesPerPixel!: number;
 
   @Column({ nullable: true })
   pixelSpacing!: string;
 
   @Column({ nullable: true })
-  bitsAllocated!: string;
+  bitsAllocated!: number;
 
   @Column({ nullable: true })
-  bitsStored!: string;
+  bitsStored!: number;
 
   @Column({ nullable: true })
-  highBit!: string;
+  highBit!: number;
 
   @Column({ nullable: true })
-  pixelRepresentation!: string;
+  pixelRepresentation!: number;
 
   @Column({ nullable: true })
   imagePositionPatient!: string;

@@ -32,23 +32,31 @@ export class StudiesService {
     image: Image,
   ) {
     patient.fkId = 0;
-    let resPatient = await this.patientRepository.findOne(patient);
+    let resPatient = await this.patientRepository.findOne({
+      where: { patientID: patient.patientID },
+    });
     if (!resPatient) {
       resPatient = await this.patientRepository.save(patient);
     }
 
     study.fkId = resPatient.id;
-    let resStudy = await this.studyRepository.findOne(study);
+    let resStudy = await this.studyRepository.findOne({
+      where: { uid: study.uid },
+    });
     if (!resStudy) {
       resStudy = await this.studyRepository.save(study);
     }
     series.fkId = resStudy.id;
-    let resSeries = await this.seriesRepository.findOne(series);
+    let resSeries = await this.seriesRepository.findOne({
+      where: { uid: series.uid },
+    });
     if (!resSeries) {
       resSeries = await this.seriesRepository.save(series);
     }
     image.fkId = resSeries.id;
-    const resImage = await this.imageRepository.findOne(image);
+    const resImage = await this.imageRepository.findOne({
+      where: { uid: image.uid },
+    });
     if (!resImage) {
       this.imageRepository.save(image);
     } else {
