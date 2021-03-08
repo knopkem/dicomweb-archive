@@ -5,10 +5,13 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Study } from './entities/study.entity';
 import { Series } from './entities/series.entity';
 import { Image } from './entities/image.entity';
+import { Patient } from './entities/patient.entity';
 
 @Injectable()
 export class StudiesService {
   constructor(
+    @InjectRepository(Patient)
+    private readonly patientRepository: Repository<Patient>,
     @InjectRepository(Study)
     private readonly studyRepository: Repository<Study>,
     @InjectRepository(Series)
@@ -22,40 +25,23 @@ export class StudiesService {
     return this.studyRepository.save(study);
   }
 
-  async createFromEntities(study: Study, series: Series, image: Image) {
-    /*
-    const resStudy = await getConnection()
-      .createQueryBuilder()
-      .insert()
-      .into(Study)
-      .values(study)
-      .orUpdate({ conflict_target: ['id', 'uid'], overwrite: [] })
-      .execute();
+  async createFromEntities(
+    patient: Patient,
+    study: Study,
+    series: Series,
+    image: Image,
+  ) {
+    patient.fkId = 0;
+    let resPatient = await this.patientRepository.findOne(patient);
+    if (!resPatient) {
+      resPatient = await this.patientRepository.save(patient);
+    }
 
-    series.fkId = resStudy.identifiers['id'];
-    const resSeries = await getConnection()
-      .createQueryBuilder()
-      .insert()
-      .into(Series)
-      .values(series)
-      .orUpdate({ conflict_target: ['id', 'uid'], overwrite: [] })
-      .execute();
-
-    image.fkId = resSeries.identifiers['id'];
-    await getConnection()
-      .createQueryBuilder()
-      .insert()
-      .into(Image)
-      .values(image)
-      .orUpdate({ conflict_target: ['id', 'uid'], overwrite: [] })
-      .execute();
-      */
-
+    study.fkId = resPatient.id;
     let resStudy = await this.studyRepository.findOne(study);
-    if (resStudy === undefined) {
+    if (!resStudy) {
       resStudy = await this.studyRepository.save(study);
     }
-    console.log('res', resStudy);
     series.fkId = resStudy.id;
     let resSeries = await this.seriesRepository.findOne(series);
     if (!resSeries) {

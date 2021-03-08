@@ -5,9 +5,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Study } from './entities/study.entity';
 import { Series } from './entities/series.entity';
 import { Image } from './entities/image.entity';
+import { Patient } from './entities/patient.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Study, Series, Image])],
+  imports: [TypeOrmModule.forFeature([Patient, Study, Series, Image])],
   controllers: [StudiesController],
   providers: [StudiesService],
   exports: [StudiesService],

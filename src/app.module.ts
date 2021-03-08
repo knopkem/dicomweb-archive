@@ -7,6 +7,7 @@ import { FilesModule } from './files/files.module';
 import { Study } from './studies/entities/study.entity';
 import { Series } from './studies/entities/series.entity';
 import { Image } from './studies/entities/image.entity';
+import { Patient } from './studies/entities/patient.entity';
 
 @Module({
   imports: [
@@ -17,7 +18,7 @@ import { Image } from './studies/entities/image.entity';
       username: 'postgres',
       password: 'postgres',
       database: 'dicomweb',
-      entities: [Study, Series, Image],
+      entities: [Patient, Study, Series, Image],
       synchronize: true,
     }),
     StudiesModule,
