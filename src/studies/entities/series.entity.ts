@@ -5,12 +5,10 @@ import {
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
-  Unique,
 } from 'typeorm';
 import { Study } from './study.entity';
 import { Image } from './image.entity';
 
-@Unique(['uid'])
 @Entity()
 export class Series {
   @PrimaryGeneratedColumn()
@@ -19,7 +17,7 @@ export class Series {
   @Column()
   fkId!: number;
 
-  @Column()
+  @Column({ unique: true })
   uid!: string;
 
   @Column({ nullable: true })

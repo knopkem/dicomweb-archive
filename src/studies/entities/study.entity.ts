@@ -5,12 +5,10 @@ import {
   ManyToOne,
   JoinColumn,
   PrimaryGeneratedColumn,
-  Unique,
 } from 'typeorm';
 import { Patient } from './patient.entity';
 import { Series } from './series.entity';
 
-@Unique(['uid'])
 @Entity()
 export class Study {
   @PrimaryGeneratedColumn()
@@ -19,7 +17,7 @@ export class Study {
   @Column()
   fkId!: number;
 
-  @Column()
+  @Column({ unique: true })
   uid!: string;
 
   @Column({ nullable: true })

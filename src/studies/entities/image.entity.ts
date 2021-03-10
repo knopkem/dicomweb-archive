@@ -4,11 +4,9 @@ import {
   JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
-  Unique,
 } from 'typeorm';
 import { Series } from './series.entity';
 
-@Unique(['uid'])
 @Entity()
 export class Image {
   @PrimaryGeneratedColumn()
@@ -17,7 +15,7 @@ export class Image {
   @Column()
   fkId!: number;
 
-  @Column()
+  @Column({ unique: true })
   uid!: string;
 
   @Column({ nullable: true })

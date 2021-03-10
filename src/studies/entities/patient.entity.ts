@@ -1,13 +1,6 @@
-import {
-  Column,
-  Entity,
-  OneToMany,
-  PrimaryGeneratedColumn,
-  Unique,
-} from 'typeorm';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Study } from './study.entity';
 
-@Unique(['patientID'])
 @Entity()
 export class Patient {
   @PrimaryGeneratedColumn()
@@ -19,7 +12,7 @@ export class Patient {
   @Column()
   patientName!: string;
 
-  @Column()
+  @Column({ unique: true })
   patientID!: string;
 
   @Column({ nullable: true })
