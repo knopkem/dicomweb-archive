@@ -22,7 +22,7 @@ export class StudiesService {
   ) {}
   create(studyDto: StudyDto) {
     const study = new Study();
-    study.uid = studyDto.uid;
+    study.studyInstanceUid = studyDto.uid;
     return this.studyRepository.save(study);
   }
 
@@ -39,7 +39,7 @@ export class StudiesService {
     try {
       patient.fkId = 0;
       let resPatient = await this.patientRepository.findOne({
-        where: { patientID: patient.patientID },
+        where: { patientId: patient.patientId },
       });
       if (!resPatient) {
         resPatient = await queryRunner.manager.save(patient);
@@ -47,21 +47,21 @@ export class StudiesService {
 
       study.fkId = resPatient.id;
       let resStudy = await this.studyRepository.findOne({
-        where: { uid: study.uid },
+        where: { studyInstanceUid: study.studyInstanceUid },
       });
       if (!resStudy) {
         resStudy = await queryRunner.manager.save(study);
       }
       series.fkId = resStudy.id;
       let resSeries = await this.seriesRepository.findOne({
-        where: { uid: series.uid },
+        where: { seriesInstanceUid: series.seriesInstanceUid },
       });
       if (!resSeries) {
         resSeries = await queryRunner.manager.save(series);
       }
       image.fkId = resSeries.id;
       const resImage = await this.imageRepository.findOne({
-        where: { uid: image.uid },
+        where: { sopInstanceUid: image.sopInstanceUid },
       });
       if (!resImage) {
         await queryRunner.manager.save(image);
@@ -83,6 +83,26 @@ export class StudiesService {
   }
 
   findOne(uid: string): Promise<Study[]> {
-    return this.studyRepository.find({ where: { uid } });
+    return this.studyRepository.find({ where: { studyInstanceUid: uid } });
+  }
+
+  findMeta(queryContainer: any) {
+    return this.patientRepository
+      .createQueryBuilder('patient')
+      .innerJoinAndSelect('patient.studies', 'study')
+      .innerJoinAndSelect('study.series', 'series')
+      .innerJoinAndSelect('series.images', 'image')
+      .where('patient.patientName like :name', { name: '%HEAD%' })
+      .andWhere(queryContainer)
+      .andWhere('study.studyInstanceUid = :studyuid', {
+        studyuid: '1.3.46.670589.5.2.10.2156913941.892665384.993397',
+      })
+      .andWhere('series.seriesInstanceUid = :seriesuid', {
+        seriesuid: '1.3.46.670589.5.2.10.2156913941.892665339.860724',
+      })
+      .andWhere('image.sopInstanceUid = :imageuid', {
+        imageuid: '1.3.46.670589.5.2.10.2156913941.892665339.718742',
+      })
+      .getMany();
   }
 }

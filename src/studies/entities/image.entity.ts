@@ -16,7 +16,7 @@ export class Image {
   fkId!: number;
 
   @Column({ unique: true })
-  uid!: string;
+  sopInstanceUid!: string;
 
   @Column({ nullable: true })
   instanceNumber!: string;

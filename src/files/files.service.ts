@@ -7,6 +7,7 @@ import { Image } from './../studies/entities/image.entity';
 import * as dicomParser from 'dicom-parser';
 import * as fs from 'fs';
 import * as path from 'path';
+import * as util from 'util';
 
 @Injectable()
 export class FilesService {
@@ -18,12 +19,12 @@ export class FilesService {
 
     const patient = new Patient();
     patient.patientName = dataset.string('x00100010');
-    patient.patientID = dataset.string('x00100020');
+    patient.patientId = dataset.string('x00100020');
     patient.patientDob = dataset.string('x00100030');
     patient.patientSex = dataset.string('x00100040');
 
     const study = new Study();
-    study.uid = dataset.string('x0020000d');
+    study.studyInstanceUid = dataset.string('x0020000d');
     study.studyDate = dataset.string('x00080020');
     study.studyTime = dataset.string('x00080030');
     study.accessionNumber = dataset.string('x00080050');
@@ -35,7 +36,7 @@ export class FilesService {
     study.patientWeight = dataset.string('x00101030');
 
     const series = new Series();
-    series.uid = dataset.string('x0020000e');
+    series.seriesInstanceUid = dataset.string('x0020000e');
     series.seriesNumber = dataset.string('x00200011');
     series.modality = dataset.string('x00080060');
     series.seriesDescription = dataset.string('x0008103e');
@@ -46,7 +47,7 @@ export class FilesService {
     series.protocolName = dataset.string('x00181030');
 
     const image = new Image();
-    image.uid = dataset.string('x00080018');
+    image.sopInstanceUid = dataset.string('x00080018');
     image.instanceNumber = dataset.string('x00200013');
     image.sliceLocation = dataset.string('x00201041');
     image.imageType = dataset.string('x00080008');
@@ -72,8 +73,6 @@ export class FilesService {
   };
 
   import = async () => {
-    console.log('importing...');
-
     {
       const filename = path.join(__filename, '../../../import/sample1');
       this.importDicomFile(filename);
@@ -81,6 +80,14 @@ export class FilesService {
     {
       const filename = path.join(__filename, '../../../import/sample2');
       this.importDicomFile(filename);
+    }
+    {
+      const query = new Map<string, string>();
+      query.set('patientId', '0009703828');
+      const myPatient = await this.studiesService.findMeta(
+        Object.fromEntries(query),
+      );
+      console.log(util.inspect(myPatient, { showHidden: false, depth: null }));
     }
   };
 }

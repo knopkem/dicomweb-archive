@@ -18,7 +18,7 @@ export class Study {
   fkId!: number;
 
   @Column({ unique: true })
-  uid!: string;
+  studyInstanceUid!: string;
 
   @Column({ nullable: true })
   studyDate!: string;

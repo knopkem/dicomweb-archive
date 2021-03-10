@@ -13,7 +13,7 @@ export class Patient {
   patientName!: string;
 
   @Column({ unique: true })
-  patientID!: string;
+  patientId!: string;
 
   @Column({ nullable: true })
   patientDob!: string;

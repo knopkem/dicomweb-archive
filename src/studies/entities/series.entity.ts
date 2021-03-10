@@ -18,7 +18,7 @@ export class Series {
   fkId!: number;
 
   @Column({ unique: true })
-  uid!: string;
+  seriesInstanceUid!: string;
 
   @Column({ nullable: true })
   seriesNumber!: string;

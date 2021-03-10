@@ -20,6 +20,7 @@ import { Patient } from './studies/entities/patient.entity';
       database: 'dicomweb',
       entities: [Patient, Study, Series, Image],
       synchronize: true,
+      logging: [],
     }),
     StudiesModule,
     FilesModule,
