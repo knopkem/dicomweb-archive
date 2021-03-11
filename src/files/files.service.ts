@@ -30,7 +30,7 @@ export class FilesService {
     study.accessionNumber = dataset.string('x00080050');
     study.referringPhysicianName = dataset.string('x00080090');
     study.studyDescription = dataset.string('x00081030');
-    study.NameOfPhysicianReadingStudy = dataset.string('x00081060');
+    study.nameOfPhysicianReadingStudy = dataset.string('x00081060');
     study.patientAge = dataset.string('x00101010');
     study.patientSize = dataset.string('x00101020');
     study.patientWeight = dataset.string('x00101030');
@@ -88,6 +88,7 @@ export class FilesService {
         Object.fromEntries(query),
       );
       console.log(util.inspect(myPatient, { showHidden: false, depth: null }));
+      console.log(this.studiesService.getColumnName('00100010'));
     }
   };
 }

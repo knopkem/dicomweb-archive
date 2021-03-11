@@ -1,11 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { StudyDto } from './dto/study.dto';
-import { Repository, Connection } from 'typeorm';
+import { Repository, Connection, getConnection } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Study } from './entities/study.entity';
 import { Series } from './entities/series.entity';
 import { Image } from './entities/image.entity';
 import { Patient } from './entities/patient.entity';
+import { PatientDto } from './dto/patient.dto';
+import { getMapping } from './tag.mapping';
 
 @Injectable()
 export class StudiesService {
@@ -86,14 +88,28 @@ export class StudiesService {
     return this.studyRepository.find({ where: { studyInstanceUid: uid } });
   }
 
+  getColumnNames() {
+    return getConnection()
+      .getMetadata(Patient)
+      .ownColumns.map((column) => column.propertyName);
+  }
+
+  getColumnName(tag: string) {
+    return getMapping(tag);
+  }
+
   findMeta(queryContainer: any) {
     return this.patientRepository
       .createQueryBuilder('patient')
       .innerJoinAndSelect('patient.studies', 'study')
       .innerJoinAndSelect('study.series', 'series')
       .innerJoinAndSelect('series.images', 'image')
-      .where('patient.patientName like :name', { name: '%HEAD%' })
+      .where('patient.patientName ILIKE :name', { name: '%HeAd%' })
       .andWhere(queryContainer)
+      .andWhere('study.studyDate BETWEEN :from AND :to', {
+        from: '19980414',
+        to: '20200101',
+      })
       .andWhere('study.studyInstanceUid = :studyuid', {
         studyuid: '1.3.46.670589.5.2.10.2156913941.892665384.993397',
       })

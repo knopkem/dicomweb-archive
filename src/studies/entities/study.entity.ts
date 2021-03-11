@@ -36,7 +36,7 @@ export class Study {
   studyDescription!: string;
 
   @Column({ nullable: true })
-  NameOfPhysicianReadingStudy!: string;
+  nameOfPhysicianReadingStudy!: string;
 
   @Column({ nullable: true })
   patientAge!: string;
