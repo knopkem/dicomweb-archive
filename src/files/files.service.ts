@@ -1,13 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { Patient } from './../studies/entities/patient.entity';
 import { Study } from './../studies/entities/study.entity';
-import { StudiesService } from './../studies/studies.service';
+import { StudiesService, QuerySyntax } from './../studies/studies.service';
 import { Series } from './../studies/entities/series.entity';
 import { Image } from './../studies/entities/image.entity';
 import * as dicomParser from 'dicom-parser';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as util from 'util';
+import { QUERY_LEVEL, EntityMeta } from 'src/studies/tag.mapping';
 
 @Injectable()
 export class FilesService {
@@ -81,14 +82,59 @@ export class FilesService {
       const filename = path.join(__filename, '../../../import/sample2');
       this.importDicomFile(filename);
     }
+
     {
-      const query = new Map<string, string>();
-      query.set('patientId', '0009703828');
+      const tags = [];
+      tags.push({ key: 'PatientID', value: '0009703828' });
+      tags.push({ key: '0020000d', value: '' });
+
+      const conditions = new Array<QuerySyntax>();
+      const select = new Array<EntityMeta>();
+
+      let queryLevel = QUERY_LEVEL.PATIENT;
+      for (const t of tags) {
+        const tagId = this.studiesService.findDicomName(t.key);
+        const entity = this.studiesService.getTagMapping(tagId);
+        if (entity) {
+          if (t.value !== '') {
+            conditions.push(
+              this.studiesService.buildWhereEqual(entity, t.value),
+            );
+          } else {
+            select.push(entity);
+          }
+          if (queryLevel < entity.level) {
+            queryLevel = entity.level;
+          }
+        } else {
+          console.log('ignoring unsupported query key: ' + t.key);
+        }
+      }
+
+      /*
+      query.set('patient.patientId = :patientId', { patientId: '0009703828' });
+      query.set('patient.patientName ILIKE :name', { name: '%HeAd%' });
+      query.set('study.studyDate BETWEEN :from AND :to', {
+        from: '19980414',
+        to: '20200101',
+      });
+      query.set('study.studyInstanceUid = :studyuid', {
+        studyuid: '1.3.46.670589.5.2.10.2156913941.892665384.993397',
+      });
+      query.set('series.seriesInstanceUid = :seriesuid', {
+        seriesuid: '1.3.46.670589.5.2.10.2156913941.892665339.860724',
+      });
+      query.set('image.sopInstanceUid = :imageuid', {
+        imageuid: '1.3.46.670589.5.2.10.2156913941.892665339.718742',
+      });
+      */
+
       const myPatient = await this.studiesService.findMeta(
-        Object.fromEntries(query),
+        conditions,
+        select,
+        queryLevel,
       );
       console.log(util.inspect(myPatient, { showHidden: false, depth: null }));
-      console.log(this.studiesService.getColumnName('00100010'));
     }
   };
 }

@@ -6,8 +6,13 @@ import { Study } from './entities/study.entity';
 import { Series } from './entities/series.entity';
 import { Image } from './entities/image.entity';
 import { Patient } from './entities/patient.entity';
-import { PatientDto } from './dto/patient.dto';
 import { getMapping } from './tag.mapping';
+import { QUERY_LEVEL, EntityMeta } from './tag.mapping';
+import * as dict from 'dicom-data-dictionary';
+
+export class QuerySyntax {
+  constructor(public queryString: string, public json: any) {}
+}
 
 @Injectable()
 export class StudiesService {
@@ -94,31 +99,63 @@ export class StudiesService {
       .ownColumns.map((column) => column.propertyName);
   }
 
-  getColumnName(tag: string) {
+  getTagMapping(tag: string) {
     return getMapping(tag);
   }
 
-  findMeta(queryContainer: any) {
-    return this.patientRepository
-      .createQueryBuilder('patient')
-      .innerJoinAndSelect('patient.studies', 'study')
-      .innerJoinAndSelect('study.series', 'series')
-      .innerJoinAndSelect('series.images', 'image')
-      .where('patient.patientName ILIKE :name', { name: '%HeAd%' })
-      .andWhere(queryContainer)
-      .andWhere('study.studyDate BETWEEN :from AND :to', {
-        from: '19980414',
-        to: '20200101',
-      })
-      .andWhere('study.studyInstanceUid = :studyuid', {
-        studyuid: '1.3.46.670589.5.2.10.2156913941.892665384.993397',
-      })
-      .andWhere('series.seriesInstanceUid = :seriesuid', {
-        seriesuid: '1.3.46.670589.5.2.10.2156913941.892665339.860724',
-      })
-      .andWhere('image.sopInstanceUid = :imageuid', {
-        imageuid: '1.3.46.670589.5.2.10.2156913941.892665339.718742',
-      })
-      .getMany();
+  findDicomName(tagName: string): string {
+    // eslint-disable-next-line no-restricted-syntax
+    for (const key of Object.keys(dict.standardDataElements)) {
+      const value = dict.standardDataElements[key];
+      if (value.name === tagName) {
+        return key;
+      }
+    }
+    return tagName;
+  }
+
+  buildWhereEqual(entity: EntityMeta, value: string): QuerySyntax {
+    return new QuerySyntax(
+      entity.canonicalColumnName() + ' = :' + entity.column,
+      {
+        [entity.column]: value,
+      },
+    );
+  }
+
+  findMeta(
+    conditions: Array<QuerySyntax>,
+    select: Array<EntityMeta>,
+    level: QUERY_LEVEL,
+  ) {
+    let queryBuilder = this.patientRepository.createQueryBuilder('patient');
+
+    // join tables depending on level
+    if (level >= QUERY_LEVEL.STUDY) {
+      queryBuilder = queryBuilder.innerJoinAndSelect(
+        'patient.studies',
+        'study',
+      );
+    }
+    if (level >= QUERY_LEVEL.SERIES) {
+      queryBuilder = queryBuilder.innerJoinAndSelect('study.series', 'series');
+    }
+    if (level >= QUERY_LEVEL.IMAGE) {
+      queryBuilder = queryBuilder.innerJoinAndSelect('series.images', 'image');
+    }
+
+    // add column selection
+    for (const entity of select) {
+      queryBuilder.addSelect(entity.canonicalColumnName());
+    }
+
+    // append where conditions
+    for (const QuerySyntax of conditions) {
+      queryBuilder = queryBuilder.andWhere(
+        QuerySyntax.queryString,
+        QuerySyntax.json,
+      );
+    }
+    return queryBuilder.getMany();
   }
 }
