@@ -193,7 +193,59 @@ export class StudiesService {
     return this.buildWhereEqual(entity, value);
   }
 
-  findMeta(tags: Array<DicomTag>) {
+  createQidoFormat(entity: EntityMeta, value: any) {
+    if (this.isPatientNameVr(entity.vr)) {
+      value = {
+        Alphabetic: value,
+      };
+    }
+    return {
+      [entity.tag]: {
+        vr: entity.vr,
+        Value: [value],
+      },
+    };
+  }
+
+  convertToRestModel(select: EntityMeta[], patients: Patient[]) {
+    const result = [];
+    // TODO: convert to array map
+    for (const patient of patients) {
+      for (const entity of select) {
+        if (entity.level == QUERY_LEVEL.PATIENT) {
+          const value = patient[entity.column];
+          result.push(this.createQidoFormat(entity, value));
+        }
+        if (patient.studies) {
+          for (const study of patient.studies) {
+            if (entity.level == QUERY_LEVEL.STUDY) {
+              const value = study[entity.column];
+              result.push(this.createQidoFormat(entity, value));
+            }
+            if (study.series) {
+              for (const series of study.series) {
+                if (entity.level == QUERY_LEVEL.SERIES) {
+                  const value = series[entity.column];
+                  result.push(this.createQidoFormat(entity, value));
+                }
+                if (series.images) {
+                  for (const image of series.images) {
+                    if (entity.level == QUERY_LEVEL.IMAGE) {
+                      const value = image[entity.column];
+                      result.push(this.createQidoFormat(entity, value));
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+    return result;
+  }
+
+  async findMeta(tags: Array<DicomTag>) {
     const conditions = new Array<QuerySyntax>();
     const select = new Array<EntityMeta>();
 
@@ -202,11 +254,10 @@ export class StudiesService {
       const tagId = this.findDicomName(t.key);
       const entity = this.getTagMapping(tagId);
       if (entity) {
-        if (t.value === '') {
-          select.push(entity);
-        } else {
+        if (t.value !== '') {
           conditions.push(this.buildWhereCondition(entity, t.value));
         }
+        select.push(entity);
         if (queryLevel < entity.level) {
           queryLevel = entity.level;
         }
@@ -237,12 +288,12 @@ export class StudiesService {
 
     // append where conditions
     for (const querySyntax of conditions) {
-      console.log(querySyntax);
       queryBuilder = queryBuilder.andWhere(
         querySyntax.queryString,
         querySyntax.json,
       );
     }
-    return queryBuilder.getMany();
+    const patients = await queryBuilder.getMany();
+    return this.convertToRestModel(select, patients);
   }
 }

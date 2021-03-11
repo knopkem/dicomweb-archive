@@ -11,6 +11,8 @@ import { Series } from './series.entity';
 
 @Entity()
 export class Study {
+  [key: string]: string | number | Series[] | Patient;
+
   @PrimaryGeneratedColumn()
   id!: number;
 

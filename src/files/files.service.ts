@@ -88,7 +88,8 @@ export class FilesService {
       tags.push(new DicomTag('PatientName', 'hEad*'));
       tags.push(new DicomTag('0020000d', ''));
       tags.push(new DicomTag('StudyDate', '1998-2020'));
-
+      tags.push(new DicomTag('SeriesDate', ''));
+      tags.push(new DicomTag('00080018', ''));
 
       const myPatient = await this.studiesService.findMeta(tags);
       console.log(util.inspect(myPatient, { showHidden: false, depth: null }));

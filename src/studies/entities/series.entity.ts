@@ -11,6 +11,8 @@ import { Image } from './image.entity';
 
 @Entity()
 export class Series {
+  [key: string]: string | number | Study | Image[];
+
   @PrimaryGeneratedColumn()
   id!: number;
 

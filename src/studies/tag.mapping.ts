@@ -10,6 +10,7 @@ export class EntityMeta {
     public level: QUERY_LEVEL,
     public column: string,
     public vr: string,
+    public tag: string = '',
   ) {}
 
   public static tableNameForQueryLevel(level: QUERY_LEVEL): string {
@@ -23,7 +24,6 @@ export class EntityMeta {
       case QUERY_LEVEL.IMAGE:
         return 'image';
     }
-    return 'unknown';
   }
   canonicalColumnName(): string {
     return EntityMeta.tableNameForQueryLevel(this.level) + '.' + this.column;
@@ -196,5 +196,9 @@ export const getMapping = (tag: string) => {
     '00110011',
     new EntityMeta(QUERY_LEVEL.IMAGE, 'privateFileName', 'CS'),
   );
-  return mapping.get(tag.toLowerCase());
+  const entity = mapping.get(tag.toLowerCase());
+  if (entity) {
+    entity.tag = tag;
+  }
+  return entity;
 };

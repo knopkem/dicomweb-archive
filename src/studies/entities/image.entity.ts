@@ -9,6 +9,8 @@ import { Series } from './series.entity';
 
 @Entity()
 export class Image {
+  [key: string]: string | number | Series;
+
   @PrimaryGeneratedColumn()
   id!: number;
 
