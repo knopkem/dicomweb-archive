@@ -10,6 +10,10 @@ import { getMapping } from './tag.mapping';
 import { QUERY_LEVEL, EntityMeta } from './tag.mapping';
 import * as dict from 'dicom-data-dictionary';
 
+export class DicomTag {
+  constructor(public key: string, public value: string) {}
+}
+
 export class QuerySyntax {
   constructor(public queryString: string, public json: any) {}
 }
@@ -123,24 +127,106 @@ export class StudiesService {
     );
   }
 
-  findMeta(
-    conditions: Array<QuerySyntax>,
-    select: Array<EntityMeta>,
-    level: QUERY_LEVEL,
-  ) {
+  buildWhereLike(entity: EntityMeta, value: string): QuerySyntax {
+    return new QuerySyntax(
+      entity.canonicalColumnName() + ' ILIKE :' + entity.column,
+      {
+        [entity.column]: this.replaceWildcardCharacters(value),
+      },
+    );
+  }
+
+  splitStringToRange(value: string): string[] {
+    const range = value.split('-');
+    while (range.length < 2) {
+      range.push('');
+    }
+    return range;
+  }
+
+  buildWhereRange(entity: EntityMeta, value: string): QuerySyntax {
+    const range = this.splitStringToRange(value);
+    return new QuerySyntax(
+      entity.canonicalColumnName() + ' BETWEEN :from AND :to',
+      {
+        from: range[0],
+        to: range[1],
+      },
+    );
+  }
+  replaceWildcardCharacters(value: string): string {
+    const result = value;
+    return result
+      .replace('*', '%')
+      .replace('?', '_')
+      .replace('^', '_')
+      .replace(' ', '_');
+  }
+
+  containsWildcardCharacters(value: string): boolean {
+    return (
+      value.includes('*') ||
+      value.includes('?') ||
+      value.includes('^') ||
+      value.includes(' ')
+    );
+  }
+
+  isPatientNameVr(vr: string) {
+    return vr === 'PN';
+  }
+
+  isDateOrTimeVr(vr: string) {
+    return vr === 'DA' || vr === 'TM';
+  }
+
+  buildWhereCondition(entity: EntityMeta, value: string): QuerySyntax {
+    if (this.isDateOrTimeVr(entity.vr)) {
+      return this.buildWhereRange(entity, value);
+    }
+    if (
+      this.isPatientNameVr(entity.vr) &&
+      this.containsWildcardCharacters(value)
+    ) {
+      return this.buildWhereLike(entity, value);
+    }
+    return this.buildWhereEqual(entity, value);
+  }
+
+  findMeta(tags: Array<DicomTag>) {
+    const conditions = new Array<QuerySyntax>();
+    const select = new Array<EntityMeta>();
+
+    let queryLevel = QUERY_LEVEL.PATIENT;
+    for (const t of tags) {
+      const tagId = this.findDicomName(t.key);
+      const entity = this.getTagMapping(tagId);
+      if (entity) {
+        if (t.value === '') {
+          select.push(entity);
+        } else {
+          conditions.push(this.buildWhereCondition(entity, t.value));
+        }
+        if (queryLevel < entity.level) {
+          queryLevel = entity.level;
+        }
+      } else {
+        console.log('ignoring unsupported query key: ' + t.key);
+      }
+    }
     let queryBuilder = this.patientRepository.createQueryBuilder('patient');
 
     // join tables depending on level
-    if (level >= QUERY_LEVEL.STUDY) {
+    if (queryLevel >= QUERY_LEVEL.STUDY) {
       queryBuilder = queryBuilder.innerJoinAndSelect(
         'patient.studies',
         'study',
       );
     }
-    if (level >= QUERY_LEVEL.SERIES) {
+    if (queryLevel >= QUERY_LEVEL.SERIES) {
       queryBuilder = queryBuilder.innerJoinAndSelect('study.series', 'series');
     }
-    if (level >= QUERY_LEVEL.IMAGE) {
+    if (queryLevel >= QUERY_LEVEL.IMAGE) {
       queryBuilder = queryBuilder.innerJoinAndSelect('series.images', 'image');
     }
 
@@ -150,10 +236,11 @@ export class StudiesService {
     }
 
     // append where conditions
-    for (const QuerySyntax of conditions) {
+    for (const querySyntax of conditions) {
+      console.log(querySyntax);
       queryBuilder = queryBuilder.andWhere(
-        QuerySyntax.queryString,
-        QuerySyntax.json,
+        querySyntax.queryString,
+        querySyntax.json,
       );
     }
     return queryBuilder.getMany();
