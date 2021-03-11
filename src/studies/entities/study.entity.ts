@@ -29,6 +29,9 @@ export class Study {
   studyTime!: string;
 
   @Column({ nullable: true })
+  studyId!: string;
+
+  @Column({ nullable: true })
   accessionNumber!: string;
 
   @Column({ nullable: true })

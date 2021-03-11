@@ -27,6 +27,7 @@ export class FilesService {
     study.studyInstanceUid = dataset.string('x0020000d');
     study.studyDate = dataset.string('x00080020');
     study.studyTime = dataset.string('x00080030');
+    study.studyId = dataset.string('x00200010');
     study.accessionNumber = dataset.string('x00080050');
     study.referringPhysicianName = dataset.string('x00080090');
     study.studyDescription = dataset.string('x00081030');

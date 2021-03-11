@@ -57,6 +57,7 @@ export const getMapping = (tag: string) => {
   );
   mapping.set('00080020', new EntityMeta(QUERY_LEVEL.STUDY, 'studyDate', 'DA'));
   mapping.set('00080030', new EntityMeta(QUERY_LEVEL.STUDY, 'studyTime', 'TM'));
+  mapping.set('00200010', new EntityMeta(QUERY_LEVEL.STUDY, 'studyId', 'SH'));
   mapping.set(
     '00080050',
     new EntityMeta(QUERY_LEVEL.STUDY, 'accessionNumber', 'SH'),

@@ -11,7 +11,7 @@ import { QUERY_LEVEL, EntityMeta } from './tag.mapping';
 import * as dict from 'dicom-data-dictionary';
 
 export class DicomTag {
-  constructor(public key: string, public value: string) {}
+  constructor(public key: string, public value: string = '') {}
 }
 
 export class QuerySyntax {
@@ -194,6 +194,9 @@ export class StudiesService {
   }
 
   createQidoFormat(entity: EntityMeta, value: any) {
+    if (!value) {
+      value = '';
+    }
     if (this.isPatientNameVr(entity.vr)) {
       value = {
         Alphabetic: value,
