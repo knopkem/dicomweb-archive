@@ -82,6 +82,7 @@ export class StudiesService {
       }
     } catch (err) {
       // since we have errors lets rollback the changes we made
+      console.error(err);
       await queryRunner.rollbackTransaction();
     } finally {
       // you need to release a queryRunner which was manually instantiated

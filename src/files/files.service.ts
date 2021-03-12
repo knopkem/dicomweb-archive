@@ -14,6 +14,7 @@ export class FilesService {
   constructor(private readonly studiesService: StudiesService) {}
 
   importDicomFile = async (filename: string) => {
+    console.log('importing: ' + filename);
     const data = fs.readFileSync(filename);
     const dataset = dicomParser.parseDicom(data);
 
@@ -49,9 +50,11 @@ export class FilesService {
 
     const image = new Image();
     image.sopInstanceUid = dataset.string('x00080018');
+    image.sopClassUid = dataset.string('x0008,0016');
     image.instanceNumber = dataset.string('x00200013');
     image.sliceLocation = dataset.string('x00201041');
     image.imageType = dataset.string('x00080008');
+    image.referencedFrameNumber = dataset.string('x00081160');
     image.numberOfFrames = dataset.string('x00280008');
     image.rows = dataset.uint16('x00280010');
     image.columns = dataset.uint16('x00280011');
@@ -70,7 +73,7 @@ export class FilesService {
     image.imageOrientationPatient = dataset.string('x00200037');
     image.privateFileName = filename;
 
-    this.studiesService.createFromEntities(patient, study, series, image);
+    await this.studiesService.createFromEntities(patient, study, series, image);
   };
 
   import = async () => {

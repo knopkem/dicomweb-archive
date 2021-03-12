@@ -5,7 +5,12 @@ import * as fs from 'fs';
 
 @Injectable()
 export class WadorsService {
-  async serveFile(filePath: string, boundary: string, contentId: string) {
+  async serveFile(
+    req: any,
+    filePath: string,
+    boundary: string,
+    contentId: string,
+  ) {
     try {
       const data = await fs.promises.readFile(filePath);
       const dataset = dicomParser.parseDicom(data);
@@ -19,20 +24,28 @@ export class WadorsService {
       const term = '\r\n';
       const endline = `${term}--${boundary}--${term}`;
 
-      const readStream = new Readable({
-        read() {
-          this.push(`${term}--${boundary}${term}`);
-          this.push(`Content-Location:localhost${term}`);
-          this.push(`Content-ID:${contentId}${term}`);
-          this.push(`Content-Type:application/octet-stream${term}`);
-          this.push(term);
-          this.push(buffer);
-          this.push(endline);
-          this.push(null);
-        },
-      });
+      const readStream = new Readable();
+      readStream.push(`${term}--${boundary}${term}`);
+      readStream.push(`Content-Location:localhost${term}`);
+      readStream.push(`Content-ID:${contentId}${term}`);
+      readStream.push(`Content-Type:application/octet-stream${term}`);
+      readStream.push(term);
+      readStream.push(buffer);
+      readStream.push(endline);
+      readStream.push(null);
 
-      return readStream;
+      readStream.on('error', (data: any) => {
+        console.error(data);
+      });
+      readStream.on('data', (data: any) => {
+        if (data) {
+          req.write(data);
+        }
+      });
+      readStream.on('end', () => {
+        req.send();
+      });
+      readStream.read();
     } catch (error) {
       console.error(error);
     }

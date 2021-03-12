@@ -170,23 +170,4 @@ export class StudiesController {
     tags.add(new DicomTag('00080018', imageUid));
     return this.studiesService.findMeta([...tags], query.offset, query.limit);
   }
-
-  @Get(
-    ':studyInstanceUid/series/:seriesInstanceUid/instances/:sopInstanceUid/frames/:frame',
-  )
-  findOneSeriesFrame(
-    @Query() query: any,
-    @Param('studyInstanceUid') studyUid: string,
-    @Param('seriesInstanceUid') seriesUid: string,
-    @Param('sopInstanceUid') imageUid: string,
-    @Param('frame') frameNo: string,
-  ) {
-    const tags = getImageLevelTags();
-    parseIncludes(query.includefield).reduce((s, e) => s.add(e), tags);
-    tags.add(new DicomTag('0020000D', studyUid));
-    tags.add(new DicomTag('0020000E', seriesUid));
-    tags.add(new DicomTag('00080018', imageUid));
-    tags.add(new DicomTag('00081160', frameNo));
-    return this.studiesService.findMeta([...tags], query.offset, query.limit);
-  }
 }

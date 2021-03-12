@@ -128,6 +128,10 @@ export const getMapping = (tag: string) => {
     new EntityMeta(QUERY_LEVEL.IMAGE, 'sopInstanceUid', 'UI'),
   );
   mapping.set(
+    '00080016',
+    new EntityMeta(QUERY_LEVEL.IMAGE, 'sopClassUid', 'UI'),
+  );
+  mapping.set(
     '00200013',
     new EntityMeta(QUERY_LEVEL.IMAGE, 'instanceNumber', 'IS'),
   );
@@ -139,6 +143,10 @@ export const getMapping = (tag: string) => {
   mapping.set(
     '00280008',
     new EntityMeta(QUERY_LEVEL.IMAGE, 'numberOfFrames', 'IS'),
+  );
+  mapping.set(
+    '00081160',
+    new EntityMeta(QUERY_LEVEL.IMAGE, 'referencedFrameNumber', 'IS'),
   );
   mapping.set('00280010', new EntityMeta(QUERY_LEVEL.IMAGE, 'rows', 'US'));
   mapping.set('00280011', new EntityMeta(QUERY_LEVEL.IMAGE, 'columns', 'US'));

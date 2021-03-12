@@ -21,6 +21,9 @@ export class Image {
   sopInstanceUid!: string;
 
   @Column({ nullable: true })
+  sopClassUid!: string;
+
+  @Column({ nullable: true })
   instanceNumber!: string;
 
   @Column({ nullable: true })
@@ -28,6 +31,9 @@ export class Image {
 
   @Column({ nullable: true })
   imageType!: string;
+
+  @Column({ nullable: true })
+  referencedFrameNumber!: string;
 
   @Column({ nullable: true })
   numberOfFrames!: string;
