@@ -8,6 +8,8 @@ import { Study } from './studies/entities/study.entity';
 import { Series } from './studies/entities/series.entity';
 import { Image } from './studies/entities/image.entity';
 import { Patient } from './studies/entities/patient.entity';
+import { WadouriModule } from './wadouri/wadouri.module';
+import { WadorsModule } from './wadors/wadors.module';
 
 @Module({
   imports: [
@@ -24,6 +26,8 @@ import { Patient } from './studies/entities/patient.entity';
     }),
     StudiesModule,
     FilesModule,
+    WadouriModule,
+    WadorsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

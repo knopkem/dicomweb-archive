@@ -52,6 +52,24 @@ function getImageLevelTags(): Set<DicomTag> {
   const tags = new Set<DicomTag>();
   tags.add(new DicomTag('00080016')); // SOP Class UID
   tags.add(new DicomTag('00080018')); // SOP Instance UID
+  tags.add(new DicomTag('00080060')); // Modality --> series
+
+  // everything below needed for WadoRS only
+  tags.add(new DicomTag('00280002')); // Samples per Pixel
+  tags.add(new DicomTag('00280004')); // Photometric Interpretation
+  tags.add(new DicomTag('00280010')); // Rows
+  tags.add(new DicomTag('00280011')); // Columns
+  tags.add(new DicomTag('00280030')); // Pixel Spacing
+  tags.add(new DicomTag('00280100')); // Bits Allocated
+  tags.add(new DicomTag('00280101')); // Bits Stored
+  tags.add(new DicomTag('00280102')); // High Bit
+  tags.add(new DicomTag('00280103')); // Pixel Representation
+  tags.add(new DicomTag('00281050')); // Window Center
+  tags.add(new DicomTag('00281051')); // Window Width
+  tags.add(new DicomTag('00281052')); // Rescale Intercept
+  tags.add(new DicomTag('00281053')); // Rescale Slope
+  tags.add(new DicomTag('00200032')); // Image Position Patient
+  tags.add(new DicomTag('00200037')); // Image Orientation Patient
   return tags;
 }
 

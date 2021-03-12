@@ -184,6 +184,25 @@ export class StudiesService {
     return vr === 'DA' || vr === 'TM';
   }
 
+  isFloatTypeVr(vr: string) {
+    return vr == 'DS' || vr == 'FL' || vr == 'FD';
+  }
+
+  isIntTypeVr(vr: string) {
+    return vr == 'IS' || vr == 'SL' || vr == 'SS' || vr == 'UL' || vr == 'US';
+  }
+
+  isStringTypeVr(vr: string) {
+    return vr == 'DS' || vr == 'IS' || vr == 'CS';
+  }
+
+  isStringTypeIntVr(vr: string) {
+    return vr == 'IS';
+  }
+  isStringTypeFloatVr(vr: string) {
+    return vr == 'DS';
+  }
+
   buildWhereCondition(entity: EntityMeta, value: string): QuerySyntax {
     if (this.isDateOrTimeVr(entity.vr)) {
       return this.buildWhereRange(entity, value);
@@ -206,9 +225,19 @@ export class StudiesService {
         Alphabetic: value,
       };
     }
+    let newValue = [value];
+    if (this.isStringTypeVr(entity.vr)) {
+      const stringValue = value as string;
+      newValue = stringValue.split('\\');
+      if (this.isStringTypeIntVr(entity.vr)) {
+        newValue = newValue.map((elem: string) => parseInt(elem));
+      } else if (this.isStringTypeFloatVr(entity.vr)) {
+        newValue = newValue.map((elem: string) => parseFloat(elem));
+      }
+    }
     return {
       [entity.tag]: {
-        Value: [value],
+        Value: newValue,
         vr: entity.vr,
       },
     };
