@@ -1,38 +1,57 @@
 import { Controller, Get, Param, Query } from '@nestjs/common';
 import { StudiesService, DicomTag } from './studies.service';
 
-function getStudyLevelTags(): DicomTag[] {
+function parseIncludes(includefield: string | undefined): DicomTag[] {
   const tags = new Array<DicomTag>();
-  tags.push(new DicomTag('00080005'));
-  tags.push(new DicomTag('00080020'));
-  tags.push(new DicomTag('00080030'));
-  tags.push(new DicomTag('00080050'));
-  tags.push(new DicomTag('00080054'));
-  tags.push(new DicomTag('00080056'));
-  tags.push(new DicomTag('00080061'));
-  tags.push(new DicomTag('00080090'));
-  tags.push(new DicomTag('00100010'));
-  tags.push(new DicomTag('00100020'));
-  tags.push(new DicomTag('00100030'));
-  tags.push(new DicomTag('00100040'));
-  tags.push(new DicomTag('0020000D'));
-  tags.push(new DicomTag('00200010'));
-  tags.push(new DicomTag('00201206'));
-  tags.push(new DicomTag('00201208'));
+  if (includefield) {
+    tags.push(
+      ...includefield.split(',').map((elem: string) => new DicomTag(elem)),
+    );
+  }
   return tags;
 }
 
-function getSeriesLevelTags(): DicomTag[] {
-  const tags = new Array<DicomTag>();
-  tags.push(new DicomTag('00080005'));
-  tags.push(new DicomTag('00080054'));
-  tags.push(new DicomTag('00080056'));
-  tags.push(new DicomTag('00080060'));
-  tags.push(new DicomTag('0008103E'));
-  tags.push(new DicomTag('00081190'));
-  tags.push(new DicomTag('0020000E'));
-  tags.push(new DicomTag('00200011'));
-  tags.push(new DicomTag('00201209'));
+function getStudyLevelTags(): Set<DicomTag> {
+  const tags = new Set<DicomTag>();
+  tags.add(new DicomTag('00080005')); // specific character set
+  tags.add(new DicomTag('00080020')); // study date
+  tags.add(new DicomTag('00080030')); // study time
+  tags.add(new DicomTag('00080050')); // accession number
+  tags.add(new DicomTag('00080054')); // retrieve AE Tile
+  tags.add(new DicomTag('00080056')); // instance availability
+  tags.add(new DicomTag('00080061')); // ModalitiesInStudy
+  tags.add(new DicomTag('00080090')); // referring physicians name
+  tags.add(new DicomTag('00081030')); // study description
+  tags.add(new DicomTag('00100010')); // patient name
+  tags.add(new DicomTag('00100020')); // patient id
+  tags.add(new DicomTag('00100030')); // patient dob
+  tags.add(new DicomTag('00100040')); // patient sex
+  tags.add(new DicomTag('0020000D')); // study instance UID
+  tags.add(new DicomTag('00200010')); // study ID
+  tags.add(new DicomTag('00201206')); // NumberOfStudyRelatedSeries
+  tags.add(new DicomTag('00201208')); // NumberOfStudyRelatedInstances
+  tags.add(new DicomTag('00080060')); // Modality (this is actually a series level tag, use if modalities in study is not supported)
+  return tags;
+}
+
+function getSeriesLevelTags(): Set<DicomTag> {
+  const tags = new Set<DicomTag>();
+  tags.add(new DicomTag('00080005')); // specific character set
+  tags.add(new DicomTag('00080054')); // retrieve AE Title
+  tags.add(new DicomTag('00080056')); // instance availablility notification
+  tags.add(new DicomTag('00080060')); // modality
+  tags.add(new DicomTag('0008103E')); // series description
+  tags.add(new DicomTag('00081190')); // retrieve url attribute
+  tags.add(new DicomTag('0020000E')); // series instance UID
+  tags.add(new DicomTag('00200011')); // series number
+  tags.add(new DicomTag('00201209')); // additional query/retrieve attributes
+  return tags;
+}
+
+function getImageLevelTags(): Set<DicomTag> {
+  const tags = new Set<DicomTag>();
+  tags.add(new DicomTag('00080016')); // SOP Class UID
+  tags.add(new DicomTag('00080018')); // SOP Instance UID
   return tags;
 }
 
@@ -44,41 +63,112 @@ export class StudiesController {
   findAll(@Query() query: any) {
     console.log(query);
     const tags = getStudyLevelTags();
-    return this.studiesService.findMeta(tags);
+    parseIncludes(query.includefield).reduce((s, e) => s.add(e), tags);
+    return this.studiesService.findMeta([...tags], query.offset, query.limit);
   }
 
-  @Get(':studyUid')
-  findOne(@Param('studyUid') studyUid: string) {
+  @Get(':studyInstanceUid')
+  findOne(@Query() query: any, @Param('studyInstanceUid') studyUid: string) {
     const tags = getStudyLevelTags();
-    return this.studiesService.findMeta(tags);
+    parseIncludes(query.includefield).reduce((s, e) => s.add(e), tags);
+    tags.add(new DicomTag('0020000D', studyUid));
+    return this.studiesService.findMeta([...tags], query.offset, query.limit);
   }
 
-  @Get(':studyUid/metadata')
-  findOneStudyMeta(@Param('studyUid') studyUid: string) {
-    return this.studiesService.findOne(studyUid);
+  @Get(':studyInstanceUid/metadata')
+  findOneStudyMeta(
+    @Query() query: any,
+    @Param('studyInstanceUid') studyUid: string,
+  ) {
+    const st = getStudyLevelTags();
+    const se = getSeriesLevelTags();
+    const tags = new Set<DicomTag>([...st, ...se]);
+    parseIncludes(query.includefield).reduce((s, e) => s.add(e), tags);
+    tags.add(new DicomTag('0020000D', studyUid));
+    return this.studiesService.findMeta([...tags], query.offset, query.limit);
   }
 
-  @Get(':studyUid/series')
-  findAllSeries(@Param() params: any) {
-    console.log(params);
+  @Get(':studyInstanceUid/series')
+  findAllSeries(
+    @Query() query: any,
+    @Param('studyInstanceUid') studyUid: string,
+  ) {
     const tags = getSeriesLevelTags();
-    return this.studiesService.findMeta(tags);
+    parseIncludes(query.includefield).reduce((s, e) => s.add(e), tags);
+    tags.add(new DicomTag('0020000D', studyUid));
+    return this.studiesService.findMeta([...tags], query.offset, query.limit);
   }
 
-  @Get(':studyUid/series/:seriesUid')
+  @Get(':studyInstanceUid/series/:seriesInstanceUid')
   findOneSeries(
-    @Param('studyUid') studyUid: string,
-    @Param('seriesUid') seriesUid: string,
+    @Query() query: any,
+    @Param('studyInstanceUid') studyUid: string,
+    @Param('seriesInstanceUid') seriesUid: string,
   ) {
-    console.log(studyUid, seriesUid);
-    return this.studiesService.findOne(studyUid);
+    const tags = getSeriesLevelTags();
+    parseIncludes(query.includefield).reduce((s, e) => s.add(e), tags);
+    tags.add(new DicomTag('0020000D', studyUid));
+    tags.add(new DicomTag('0020000E', seriesUid));
+    return this.studiesService.findMeta([...tags], query.offset, query.limit);
   }
-  @Get(':studyUid/series/:seriesUid/metadata')
-  findOneSeriesMeta(
-    @Param('studyUid') studyUid: string,
-    @Param('seriesUid') seriesUid: string,
+
+  @Get(':studyInstanceUid/series/:seriesInstanceUid/instances')
+  findOneSeriesInstances(
+    @Query() query: any,
+    @Param('studyInstanceUid') studyUid: string,
+    @Param('seriesInstanceUid') seriesUid: string,
   ) {
-    console.log(studyUid, seriesUid);
-    return this.studiesService.findOne(studyUid);
+    const tags = getImageLevelTags();
+    parseIncludes(query.includefield).reduce((s, e) => s.add(e), tags);
+    tags.add(new DicomTag('0020000D', studyUid));
+    tags.add(new DicomTag('0020000E', seriesUid));
+    return this.studiesService.findMeta([...tags], query.offset, query.limit);
+  }
+
+  @Get(':studyInstanceUid/series/:seriesInstanceUid/metadata')
+  findOneSeriesMeta(
+    @Query() query: any,
+    @Param('studyInstanceUid') studyUid: string,
+    @Param('seriesInstanceUid') seriesUid: string,
+  ) {
+    const tags = getImageLevelTags();
+    parseIncludes(query.includefield).reduce((s, e) => s.add(e), tags);
+    tags.add(new DicomTag('0020000D', studyUid));
+    tags.add(new DicomTag('0020000E', seriesUid));
+    return this.studiesService.findMeta([...tags], query.offset, query.limit);
+  }
+
+  @Get(':studyInstanceUid/series/:seriesInstanceUid/instances/:sopInstanceUid')
+  findOneSeriesInstance(
+    @Query() query: any,
+    @Param('studyInstanceUid') studyUid: string,
+    @Param('seriesInstanceUid') seriesUid: string,
+    @Param('sopInstanceUid') imageUid: string,
+  ) {
+    const tags = getImageLevelTags();
+    parseIncludes(query.includefield).reduce((s, e) => s.add(e), tags);
+    tags.add(new DicomTag('0020000D', studyUid));
+    tags.add(new DicomTag('0020000E', seriesUid));
+    tags.add(new DicomTag('00080018', imageUid));
+    return this.studiesService.findMeta([...tags], query.offset, query.limit);
+  }
+
+  @Get(
+    ':studyInstanceUid/series/:seriesInstanceUid/instances/:sopInstanceUid/frames/:frame',
+  )
+  findOneSeriesFrame(
+    @Query() query: any,
+    @Param('studyInstanceUid') studyUid: string,
+    @Param('seriesInstanceUid') seriesUid: string,
+    @Param('sopInstanceUid') imageUid: string,
+    @Param('frame') frameNo: string,
+  ) {
+    const tags = getImageLevelTags();
+    parseIncludes(query.includefield).reduce((s, e) => s.add(e), tags);
+    tags.add(new DicomTag('0020000D', studyUid));
+    tags.add(new DicomTag('0020000E', seriesUid));
+    tags.add(new DicomTag('00080018', imageUid));
+    tags.add(new DicomTag('00081160', frameNo));
+    return this.studiesService.findMeta([...tags], query.offset, query.limit);
   }
 }

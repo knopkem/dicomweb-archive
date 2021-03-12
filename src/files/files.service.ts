@@ -92,7 +92,7 @@ export class FilesService {
       tags.push(new DicomTag('SeriesDate', ''));
       tags.push(new DicomTag('00080018', ''));
 
-      const myPatient = await this.studiesService.findMeta(tags);
+      const myPatient = await this.studiesService.findMeta(tags, 0, 0);
       console.log(util.inspect(myPatient, { showHidden: false, depth: null }));
     }
   };

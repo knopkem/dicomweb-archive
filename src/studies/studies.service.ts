@@ -107,8 +107,12 @@ export class StudiesService {
     return getMapping(tag);
   }
 
-  findDicomName(tagName: string): string {
-    // eslint-disable-next-line no-restricted-syntax
+  findDicomName(tagId: string): string {
+    const dictionary = new dict.DataElementDictionary();
+    return dictionary.lookup(tagId)?.name;
+  }
+
+  findFromDicomName(tagName: string): string {
     for (const key of Object.keys(dict.standardDataElements)) {
       const value = dict.standardDataElements[key];
       if (value.name === tagName) {
@@ -204,8 +208,8 @@ export class StudiesService {
     }
     return {
       [entity.tag]: {
-        vr: entity.vr,
         Value: [value],
+        vr: entity.vr,
       },
     };
   }
@@ -214,28 +218,33 @@ export class StudiesService {
     const result = [];
     // TODO: convert to array map
     for (const patient of patients) {
+      const row = {};
       for (const entity of select) {
         if (entity.level == QUERY_LEVEL.PATIENT) {
           const value = patient[entity.column];
-          result.push(this.createQidoFormat(entity, value));
+          const p = this.createQidoFormat(entity, value);
+          Object.assign(row, p);
         }
         if (patient.studies) {
           for (const study of patient.studies) {
             if (entity.level == QUERY_LEVEL.STUDY) {
               const value = study[entity.column];
-              result.push(this.createQidoFormat(entity, value));
+              const p = this.createQidoFormat(entity, value);
+              Object.assign(row, p);
             }
             if (study.series) {
               for (const series of study.series) {
                 if (entity.level == QUERY_LEVEL.SERIES) {
                   const value = series[entity.column];
-                  result.push(this.createQidoFormat(entity, value));
+                  const p = this.createQidoFormat(entity, value);
+                  Object.assign(row, p);
                 }
                 if (series.images) {
                   for (const image of series.images) {
                     if (entity.level == QUERY_LEVEL.IMAGE) {
                       const value = image[entity.column];
-                      result.push(this.createQidoFormat(entity, value));
+                      const p = this.createQidoFormat(entity, value);
+                      Object.assign(row, p);
                     }
                   }
                 }
@@ -244,17 +253,18 @@ export class StudiesService {
           }
         }
       }
+      result.push(row);
     }
     return result;
   }
 
-  async findMeta(tags: Array<DicomTag>) {
+  async findMeta(tags: Array<DicomTag>, offset: number, limit: number) {
     const conditions = new Array<QuerySyntax>();
     const select = new Array<EntityMeta>();
 
     let queryLevel = QUERY_LEVEL.PATIENT;
     for (const t of tags) {
-      const tagId = this.findDicomName(t.key);
+      const tagId = this.findFromDicomName(t.key);
       const entity = this.getTagMapping(tagId);
       if (entity) {
         if (t.value !== '') {
@@ -265,7 +275,12 @@ export class StudiesService {
           queryLevel = entity.level;
         }
       } else {
-        console.log('ignoring unsupported query key: ' + t.key);
+        console.log(
+          'ignoring unsupported query key: ' +
+            t.key +
+            ' - ' +
+            this.findDicomName(t.key),
+        );
       }
     }
     let queryBuilder = this.patientRepository.createQueryBuilder('patient');
@@ -282,6 +297,16 @@ export class StudiesService {
     }
     if (queryLevel >= QUERY_LEVEL.IMAGE) {
       queryBuilder = queryBuilder.innerJoinAndSelect('series.images', 'image');
+    }
+
+    // for pagination, start at offset
+    if (offset !== undefined) {
+      queryBuilder.skip(offset);
+    }
+
+    // for pagination, limit result
+    if (limit !== undefined) {
+      queryBuilder.take(limit);
     }
 
     // add column selection
