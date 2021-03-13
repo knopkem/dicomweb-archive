@@ -6,8 +6,9 @@ import { Series } from './../studies/entities/series.entity';
 import { Image } from './../studies/entities/image.entity';
 import * as dicomParser from 'dicom-parser';
 import * as fs from 'fs';
-import * as path from 'path';
 import * as util from 'util';
+import * as rra from 'recursive-readdir-async';
+import * as path from 'path';
 
 @Injectable()
 export class FilesService {
@@ -78,15 +79,18 @@ export class FilesService {
 
   import = async () => {
     {
-      const filename = path.join(__filename, '../../../import/sample1');
-      this.importDicomFile(filename);
-    }
-    {
-      const filename = path.join(__filename, '../../../import/sample2');
-      this.importDicomFile(filename);
-    }
+      try {
+        const directory = path.join(__filename, '../../../import');
+        const list = await rra.list(directory);
+        list.forEach((filename: any) => {
+          if (!list.isDirectory) {
+            this.importDicomFile(filename.fullname);
+          }
+        });
+      } catch (error) {
+        console.error(error);
+      }
 
-    {
       const tags = new Array<DicomTag>();
       tags.push(new DicomTag('PatientID', '0009703828'));
       tags.push(new DicomTag('PatientName', 'hEad*'));
