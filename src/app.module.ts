@@ -1,7 +1,5 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { StudiesModule } from './studies/studies.module';
 import { FilesModule } from './files/files.module';
 import { Study } from './studies/entities/study.entity';
@@ -10,9 +8,14 @@ import { Image } from './studies/entities/image.entity';
 import { Patient } from './studies/entities/patient.entity';
 import { WadouriModule } from './wadouri/wadouri.module';
 import { WadorsModule } from './wadors/wadors.module';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 
 @Module({
   imports: [
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'public'),
+    }),
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: 'localhost',
@@ -29,7 +32,7 @@ import { WadorsModule } from './wadors/wadors.module';
     WadouriModule,
     WadorsModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  controllers: [],
+  providers: [],
 })
 export class AppModule {}
