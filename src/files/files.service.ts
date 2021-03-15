@@ -72,7 +72,7 @@ export class FilesService {
     image.pixelRepresentation = dataset.uint16('x00280103');
     image.imagePositionPatient = dataset.string('x00200032');
     image.imageOrientationPatient = dataset.string('x00200037');
-    image.privateFileName = filename;
+    image.privateFileName = filename.replace(/\\/g, '/');
 
     await this.studiesService.createFromEntities(patient, study, series, image);
   };
@@ -81,12 +81,12 @@ export class FilesService {
     {
       try {
         const directory = path.join(__filename, '../../../import');
-        const list = await rra.list(directory);
-        list.forEach((filename: any) => {
-          if (!list.isDirectory) {
-            this.importDicomFile(filename.fullname);
+        const files = await rra.list(directory);
+        for (const file of files) {
+          if (!file.isDirectory) {
+            await this.importDicomFile(file.fullname);
           }
-        });
+        }
       } catch (error) {
         console.error(error);
       }

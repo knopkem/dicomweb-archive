@@ -79,7 +79,6 @@ export class StudiesController {
 
   @Get()
   findAll(@Query() query: any) {
-    console.log(query);
     const tags = getStudyLevelTags();
     parseIncludes(query.includefield).reduce((s, e) => s.add(e), tags);
     return this.studiesService.findMeta([...tags], query.offset, query.limit);

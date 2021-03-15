@@ -7,7 +7,7 @@ import { Series } from './entities/series.entity';
 import { Image } from './entities/image.entity';
 import { Patient } from './entities/patient.entity';
 import { getMapping } from './tag.mapping';
-import { QUERY_LEVEL, EntityMeta } from './tag.mapping';
+import { QUERY_LEVEL, EntityMeta, PRIVATE_FILENAME } from './tag.mapping';
 import * as dict from 'dicom-data-dictionary';
 
 export class DicomTag {
@@ -353,5 +353,20 @@ export class StudiesService {
     }
     const patients = await queryBuilder.getMany();
     return this.convertToRestModel(select, patients);
+  }
+
+  async getFilepath(studyUid: string, seriesUid: string, imageUid: string) {
+    const tags = new Array<DicomTag>();
+    tags.push(new DicomTag('StudyInstanceUID', studyUid));
+    tags.push(new DicomTag('SeriesInstanceUID', seriesUid));
+    tags.push(new DicomTag('SOPInstanceUID', imageUid));
+    tags.push(new DicomTag(PRIVATE_FILENAME, ''));
+
+    const fileMeta = await this.findMeta(tags, 0, 0);
+    if (!fileMeta || fileMeta.length === 0) {
+      return null;
+    }
+    const json = fileMeta as any;
+    return json[0][PRIVATE_FILENAME]['Value'][0];
   }
 }

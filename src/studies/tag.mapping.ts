@@ -1,3 +1,5 @@
+export const PRIVATE_FILENAME = '00110011';
+
 export enum QUERY_LEVEL {
   PATIENT = 0,
   STUDY = 1,
@@ -202,7 +204,7 @@ export const getMapping = (tag: string) => {
 
   // private
   mapping.set(
-    '00110011',
+    PRIVATE_FILENAME,
     new EntityMeta(QUERY_LEVEL.IMAGE, 'privateFileName', 'CS'),
   );
   const entity = mapping.get(tag.toLowerCase());
