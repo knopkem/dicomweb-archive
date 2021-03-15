@@ -246,46 +246,50 @@ export class StudiesService {
     };
   }
 
+  getProperties(child: any, select: EntityMeta[], level: QUERY_LEVEL) {
+    const row = {};
+    for (const entity of select) {
+      if (entity.level !== level) continue;
+      const value = child[entity.column];
+      const p = this.createQidoFormat(entity, value);
+      Object.assign(row, p);
+    }
+    return row;
+  }
+
   convertToRestModel(select: EntityMeta[], patients: Patient[]) {
     const result = [];
-    // TODO: convert to array map
+
     for (const patient of patients) {
-      const row = {};
-      for (const entity of select) {
-        if (entity.level == QUERY_LEVEL.PATIENT) {
-          const value = patient[entity.column];
-          const p = this.createQidoFormat(entity, value);
-          Object.assign(row, p);
+      const pRow = this.getProperties(patient, select, QUERY_LEVEL.PATIENT);
+      if (!patient.studies) {
+        result.push(pRow);
+        continue;
+      }
+      for (const study of patient.studies) {
+        const stRow = this.getProperties(study, select, QUERY_LEVEL.STUDY);
+        const pObj = JSON.parse(JSON.stringify(pRow));
+        Object.assign(pObj, stRow);
+        if (!study.series) {
+          result.push(pObj);
+          continue;
         }
-        if (patient.studies) {
-          for (const study of patient.studies) {
-            if (entity.level == QUERY_LEVEL.STUDY) {
-              const value = study[entity.column];
-              const p = this.createQidoFormat(entity, value);
-              Object.assign(row, p);
-            }
-            if (study.series) {
-              for (const series of study.series) {
-                if (entity.level == QUERY_LEVEL.SERIES) {
-                  const value = series[entity.column];
-                  const p = this.createQidoFormat(entity, value);
-                  Object.assign(row, p);
-                }
-                if (series.images) {
-                  for (const image of series.images) {
-                    if (entity.level == QUERY_LEVEL.IMAGE) {
-                      const value = image[entity.column];
-                      const p = this.createQidoFormat(entity, value);
-                      Object.assign(row, p);
-                    }
-                  }
-                }
-              }
-            }
+        for (const series of study.series) {
+          const serRow = this.getProperties(series, select, QUERY_LEVEL.SERIES);
+          const stObj = JSON.parse(JSON.stringify(pObj));
+          Object.assign(stObj, serRow);
+          if (!series.images) {
+            result.push(stObj);
+            continue;
+          }
+          for (const image of series.images) {
+            const iRow = this.getProperties(image, select, QUERY_LEVEL.IMAGE);
+            const serObj = JSON.parse(JSON.stringify(stObj));
+            Object.assign(serObj, iRow);
+            result.push(serObj);
           }
         }
       }
-      result.push(row);
     }
     return result;
   }
