@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { StudyDto } from './dto/study.dto';
 import { Repository, Connection, getConnection } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -31,6 +31,8 @@ export class StudiesService {
     @InjectRepository(Image)
     private readonly imageRepository: Repository<Image>,
   ) {}
+  logger = new Logger('StudiesService');
+
   create(studyDto: StudyDto) {
     const study = new Study();
     study.studyInstanceUid = studyDto.uid;
@@ -78,11 +80,11 @@ export class StudiesService {
         await queryRunner.manager.save(image);
         await queryRunner.commitTransaction();
       } else {
-        console.log('ignoring duplicate image');
+        this.logger.verbose('ignoring duplicate image');
       }
-    } catch (err) {
+    } catch (error) {
       // since we have errors lets rollback the changes we made
-      console.error(err);
+      this.logger.error(error);
       await queryRunner.rollbackTransaction();
     } finally {
       // you need to release a queryRunner which was manually instantiated
@@ -305,7 +307,7 @@ export class StudiesService {
           queryLevel = entity.level;
         }
       } else {
-        console.log(
+        this.logger.verbose(
           'ignoring unsupported query key: ' +
             t.key +
             ' - ' +

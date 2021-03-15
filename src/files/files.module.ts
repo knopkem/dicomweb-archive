@@ -1,4 +1,4 @@
-import { Module, OnModuleInit } from '@nestjs/common';
+import { Logger, Module, OnModuleInit } from '@nestjs/common';
 import { FilesService } from './files.service';
 import { StudiesModule } from './../studies/studies.module';
 
@@ -8,9 +8,10 @@ import { StudiesModule } from './../studies/studies.module';
 })
 export class FilesModule implements OnModuleInit {
   constructor(private fileService: FilesService) {}
+  logger = new Logger('FilesModule');
 
   onModuleInit() {
-    console.log(`Initialization...`);
+    this.logger.verbose(`Initialization...`);
     this.fileService.import();
   }
 }

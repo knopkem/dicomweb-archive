@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { Patient } from './../studies/entities/patient.entity';
 import { Study } from './../studies/entities/study.entity';
 import { StudiesService, DicomTag } from './../studies/studies.service';
@@ -13,9 +13,10 @@ import * as path from 'path';
 @Injectable()
 export class FilesService {
   constructor(private readonly studiesService: StudiesService) {}
+  logger = new Logger('FilesService');
 
   importDicomFile = async (filename: string) => {
-    console.log('importing: ' + filename);
+    this.logger.verbose('importing: ' + filename);
     const data = fs.readFileSync(filename);
     const dataset = dicomParser.parseDicom(data);
 
@@ -90,17 +91,6 @@ export class FilesService {
       } catch (error) {
         console.error(error);
       }
-
-      const tags = new Array<DicomTag>();
-      tags.push(new DicomTag('PatientID', '0009703828'));
-      tags.push(new DicomTag('PatientName', 'hEad*'));
-      tags.push(new DicomTag('0020000d', ''));
-      tags.push(new DicomTag('StudyDate', '1998-2020'));
-      tags.push(new DicomTag('SeriesDate', ''));
-      tags.push(new DicomTag('00080018', ''));
-
-      const myPatient = await this.studiesService.findMeta(tags, 0, 0);
-      console.log(util.inspect(myPatient, { showHidden: false, depth: null }));
     }
   };
 }
