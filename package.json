@@ -2,7 +2,7 @@
   "name": "dicomweb-archive",
   "version": "1.0.0",
   "description": "lightweight dicomweb server with sql db backend support",
-  "author": "",
+  "author": "Michael Knopke",
   "private": false,
   "license": "MIT",
   "scripts": {
@@ -20,6 +20,35 @@
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/knopkem/dicomweb-archive.git"
+  },
+  "bugs": {
+    "url": "https://github.com/knopkem/dicomweb-archive/issues"
+  },
+  "homepage": "https://github.com/knopkem/dicomweb-archive#readme",
+  "keywords": [
+    "DICOMWEB",
+    "SERVER",
+    "PACS",
+    "ARCHIVE",
+    "DIMSE",
+    "DICOM",
+    "STORE",
+    "MOVE",
+    "GET",
+    "FIND",
+    "SCP",
+    "SCU",
+    "OHIF",
+    "VIEWER",
+    "ORTHANC",
+    "DCMTK",
+    "DCM4CHEE",
+    "PACSONE",
+    "CONQUEST"
+  ],
   "dependencies": {
     "@nestjs/common": "^7.5.1",
     "@nestjs/core": "^7.5.1",
