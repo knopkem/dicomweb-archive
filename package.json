@@ -1,7 +1,7 @@
 {
   "name": "dicomweb-archive",
-  "version": "1.0.0",
-  "description": "lightweight dicomweb server with sql db backend support",
+  "version": "1.0.1",
+  "description": "Lightweight dicomweb server with sql db backend support",
   "author": "Michael Knopke",
   "private": false,
   "license": "MIT",
