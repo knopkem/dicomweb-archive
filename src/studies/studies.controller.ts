@@ -1,16 +1,6 @@
 import { Controller, Get, Param, Query } from '@nestjs/common';
 import { StudiesService, DicomTag } from './studies.service';
 
-function parseIncludes(includefield: string | undefined): DicomTag[] {
-  const tags = new Array<DicomTag>();
-  if (includefield) {
-    tags.push(
-      ...includefield.split(',').map((elem: string) => new DicomTag(elem)),
-    );
-  }
-  return tags;
-}
-
 function getStudyLevelTags(): Set<DicomTag> {
   const tags = new Set<DicomTag>();
   tags.add(new DicomTag('00080005')); // specific character set
@@ -77,17 +67,44 @@ function getImageLevelTags(): Set<DicomTag> {
 export class StudiesController {
   constructor(private readonly studiesService: StudiesService) {}
 
+  private parseIncludes(includefield: string | undefined): DicomTag[] {
+    const tags = new Array<DicomTag>();
+    if (includefield) {
+      tags.push(
+        ...includefield.split(',').map((elem: string) => new DicomTag(elem)),
+      );
+    }
+    return tags;
+  }
+
+  private parseQuery(query: any): DicomTag[] {
+    const tags = new Array<DicomTag>();
+    Object.keys(query).forEach((propName) => {
+      const tag = this.studiesService.findFromDicomName(propName);
+      if (tag) {
+        const value = query[propName];
+        tags.push({ key: tag, value });
+      }
+    });
+    return tags;
+  }
+
   @Get()
   findAll(@Query() query: any) {
+    console.log(query);
     const tags = getStudyLevelTags();
-    parseIncludes(query.includefield).reduce((s, e) => s.add(e), tags);
+    const queryTags = this.parseQuery(query);
+    queryTags.reduce((s, e) => s.add(e), tags);
+    this.parseIncludes(query.includefield).reduce((s, e) => s.add(e), tags);
     return this.studiesService.findMeta([...tags], query.offset, query.limit);
   }
 
   @Get(':studyInstanceUid')
   findOne(@Query() query: any, @Param('studyInstanceUid') studyUid: string) {
     const tags = getStudyLevelTags();
-    parseIncludes(query.includefield).reduce((s, e) => s.add(e), tags);
+    const queryTags = this.parseQuery(query);
+    queryTags.reduce((s, e) => s.add(e), tags);
+    this.parseIncludes(query.includefield).reduce((s, e) => s.add(e), tags);
     tags.add(new DicomTag('0020000D', studyUid));
     return this.studiesService.findMeta([...tags], query.offset, query.limit);
   }
@@ -100,7 +117,9 @@ export class StudiesController {
     const st = getStudyLevelTags();
     const se = getSeriesLevelTags();
     const tags = new Set<DicomTag>([...st, ...se]);
-    parseIncludes(query.includefield).reduce((s, e) => s.add(e), tags);
+    const queryTags = this.parseQuery(query);
+    queryTags.reduce((s, e) => s.add(e), tags);
+    this.parseIncludes(query.includefield).reduce((s, e) => s.add(e), tags);
     tags.add(new DicomTag('0020000D', studyUid));
     return this.studiesService.findMeta([...tags], query.offset, query.limit);
   }
@@ -111,7 +130,9 @@ export class StudiesController {
     @Param('studyInstanceUid') studyUid: string,
   ) {
     const tags = getSeriesLevelTags();
-    parseIncludes(query.includefield).reduce((s, e) => s.add(e), tags);
+    const queryTags = this.parseQuery(query);
+    queryTags.reduce((s, e) => s.add(e), tags);
+    this.parseIncludes(query.includefield).reduce((s, e) => s.add(e), tags);
     tags.add(new DicomTag('0020000D', studyUid));
     return this.studiesService.findMeta([...tags], query.offset, query.limit);
   }
@@ -123,7 +144,9 @@ export class StudiesController {
     @Param('seriesInstanceUid') seriesUid: string,
   ) {
     const tags = getSeriesLevelTags();
-    parseIncludes(query.includefield).reduce((s, e) => s.add(e), tags);
+    const queryTags = this.parseQuery(query);
+    queryTags.reduce((s, e) => s.add(e), tags);
+    this.parseIncludes(query.includefield).reduce((s, e) => s.add(e), tags);
     tags.add(new DicomTag('0020000D', studyUid));
     tags.add(new DicomTag('0020000E', seriesUid));
     return this.studiesService.findMeta([...tags], query.offset, query.limit);
@@ -136,7 +159,9 @@ export class StudiesController {
     @Param('seriesInstanceUid') seriesUid: string,
   ) {
     const tags = getImageLevelTags();
-    parseIncludes(query.includefield).reduce((s, e) => s.add(e), tags);
+    const queryTags = this.parseQuery(query);
+    queryTags.reduce((s, e) => s.add(e), tags);
+    this.parseIncludes(query.includefield).reduce((s, e) => s.add(e), tags);
     tags.add(new DicomTag('0020000D', studyUid));
     tags.add(new DicomTag('0020000E', seriesUid));
     return this.studiesService.findMeta([...tags], query.offset, query.limit);
@@ -149,7 +174,9 @@ export class StudiesController {
     @Param('seriesInstanceUid') seriesUid: string,
   ) {
     const tags = getImageLevelTags();
-    parseIncludes(query.includefield).reduce((s, e) => s.add(e), tags);
+    const queryTags = this.parseQuery(query);
+    queryTags.reduce((s, e) => s.add(e), tags);
+    this.parseIncludes(query.includefield).reduce((s, e) => s.add(e), tags);
     tags.add(new DicomTag('0020000D', studyUid));
     tags.add(new DicomTag('0020000E', seriesUid));
     return this.studiesService.findMeta([...tags], query.offset, query.limit);
@@ -163,7 +190,9 @@ export class StudiesController {
     @Param('sopInstanceUid') imageUid: string,
   ) {
     const tags = getImageLevelTags();
-    parseIncludes(query.includefield).reduce((s, e) => s.add(e), tags);
+    const queryTags = this.parseQuery(query);
+    queryTags.reduce((s, e) => s.add(e), tags);
+    this.parseIncludes(query.includefield).reduce((s, e) => s.add(e), tags);
     tags.add(new DicomTag('0020000D', studyUid));
     tags.add(new DicomTag('0020000E', seriesUid));
     tags.add(new DicomTag('00080018', imageUid));

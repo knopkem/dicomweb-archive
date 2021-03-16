@@ -28,10 +28,12 @@ An easy to use DICOMWEB server with SQL DB backend
 * run:  
   ```npm start```
 
-* import DICOM images: put DICOM files into 'import' directory and restart  (files are parsed and copied into data directory, can be removed afterwards)
+* import DICOM images: put DICOM files into 'import' directory* and restart  
 
 * open webbrowser and start viewing  
   ```http://localhost:5000```
+
+(*) files are currently parsed in-place and indexed in the db, so they need to stay
 
 ## License
 MIT
