@@ -1,10 +1,10 @@
 {
   "name": "dicomweb-archive",
   "version": "1.0.0",
-  "description": "",
+  "description": "lightweight dicomweb server with sql db backend support",
   "author": "",
-  "private": true,
-  "license": "UNLICENSED",
+  "private": false,
+  "license": "MIT",
   "scripts": {
     "prebuild": "rimraf dist",
     "build": "nest build",
