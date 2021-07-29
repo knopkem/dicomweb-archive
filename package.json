@@ -54,7 +54,7 @@
     "@nestjs/core": "^7.6.18",
     "@nestjs/mapped-types": "^0.4.1",
     "@nestjs/platform-express": "^7.6.18",
-    "@nestjs/serve-static": "^2.1.4",
+    "@nestjs/serve-static": "^2.2.2",
     "@nestjs/typeorm": "^7.1.5",
     "dicom-data-dictionary": "^0.3.1",
     "dicom-parser": "^1.8.7",
