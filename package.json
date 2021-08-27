@@ -58,7 +58,7 @@
     "@nestjs/typeorm": "^7.1.5",
     "dicom-data-dictionary": "^0.3.1",
     "dicom-parser": "^1.8.7",
-    "mysql2": "^2.2.5",
+    "mysql2": "^2.3.0",
     "pg": "^8.6.0",
     "recursive-readdir-async": "^1.1.8",
     "reflect-metadata": "^0.1.13",
