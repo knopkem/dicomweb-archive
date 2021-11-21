@@ -136,9 +136,9 @@ function createQidoFormat(entity: EntityMeta, value: any) {
 function getProperties(entity: any, select: EntityMeta[], level: QUERY_LEVEL) {
   const row = {};
   for (const e of select) {
-    if (entity.level !== level) continue;
+    if (e.level !== level) continue;
     const value = entity[e.column];
-    const p = createQidoFormat(entity, value);
+    const p = createQidoFormat(e, value);
     Object.assign(row, p);
   }
   return row;

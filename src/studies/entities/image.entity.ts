@@ -1,11 +1,11 @@
-import { BaseEntity, Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { Series } from './series.entity';
 
 /**
  * The Image entity/table
  */
 @Entity()
-export class Image extends BaseEntity {
+export class Image {
 
   @PrimaryGeneratedColumn()
   id!: number;

@@ -6,7 +6,7 @@ import { Series } from './series.entity';
  * The Study entity/table
  */
 @Entity()
-export class Study extends BaseEntity {
+export class Study {
 
   @PrimaryGeneratedColumn()
   id!: number;
