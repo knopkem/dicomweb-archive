@@ -1,13 +1,15 @@
 import {
   Controller,
   Get,
+  Header,
+  Logger,
   NotFoundException,
-  Param,
   Query,
   Res,
 } from '@nestjs/common';
 import { WadouriService } from './wadouri.service';
 import { StudiesService } from 'src/studies/studies.service';
+import { Response } from 'express';
 
 @Controller('wadouri')
 export class WadouriController {
@@ -16,13 +18,17 @@ export class WadouriController {
     private readonly studiesService: StudiesService,
   ) {}
 
+  logger = new Logger('WadouriController');
+
+  @Header('Content-type', 'application/dicom')
   @Get()
   async findAll(
-    @Res() res: any,
+    @Res() res: Response,
     @Query('studyUID') studyUid: string,
     @Query('seriesUID') seriesUid: string,
     @Query('objectUID') imageUid: string,
   ) {
+    // get the path to the file based on uids, we use the study service for this
     const filePath = await this.studiesService.getFilepath(
       studyUid,
       seriesUid,
@@ -30,10 +36,12 @@ export class WadouriController {
     );
 
     if (!filePath) {
+      this.logger.error('File not found')
       throw new NotFoundException();
     }
-    res.set('Content-type', 'application/dicom');
-    const result = await this.wadouriService.serveFile(filePath);
-    res.send(result);
+
+    const buffer = await this.wadouriService.getFileBufferFromFile(filePath);
+    const stream = this.wadouriService.getReadableStream(buffer);
+    stream.pipe(res);
   }
 }

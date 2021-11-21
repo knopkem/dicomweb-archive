@@ -362,10 +362,8 @@ export class StudiesService {
   }
 
   async getFilepath(studyUid: string, seriesUid: string, imageUid: string) {
-    this.logger.debug(` ${studyUid} / ${seriesUid} / ${imageUid}`);
-
     if (!studyUid || !seriesUid || !imageUid) {
-      this.logger.error('missing properties');
+      this.logger.error(`missing properties: ${studyUid} / ${seriesUid} / ${imageUid}`);
       throw new NotFoundException();
     }
 

@@ -5,49 +5,34 @@ import * as fs from 'fs';
 
 @Injectable()
 export class WadorsService {
-  async serveFile(
-    req: any,
-    filePath: string,
-    boundary: string,
-    contentId: string,
-  ) {
-    try {
-      const data = await fs.promises.readFile(filePath);
-      const dataset = dicomParser.parseDicom(data);
-      const pixelDataElement = dataset.elements.x7fe00010;
-      const buffer = Buffer.from(
-        dataset.byteArray.buffer,
-        pixelDataElement.dataOffset,
-        pixelDataElement.length,
-      );
 
-      const term = '\r\n';
-      const endline = `${term}--${boundary}--${term}`;
 
-      const readStream = new Readable();
-      readStream.push(`${term}--${boundary}${term}`);
-      readStream.push(`Content-Location:localhost${term}`);
-      readStream.push(`Content-ID:${contentId}${term}`);
-      readStream.push(`Content-Type:application/octet-stream${term}`);
-      readStream.push(term);
-      readStream.push(buffer);
-      readStream.push(endline);
-      readStream.push(null);
-
-      readStream.on('error', (data: any) => {
-        console.error(data);
-      });
-      readStream.on('data', (data: any) => {
-        if (data) {
-          req.write(data);
-        }
-      });
-      readStream.on('end', () => {
-        req.send();
-      });
-      readStream.read();
-    } catch (error) {
-      console.error(error);
-    }
+  async getPixelBufferFromFile(filePath: string): Promise<Buffer> {
+    // read file from file system and extract pixel buffer
+    const data = await fs.promises.readFile(filePath);
+    const dataset = dicomParser.parseDicom(data);
+    const pixelDataElement = dataset.elements.x7fe00010;
+    return Buffer.from(
+      dataset.byteArray.buffer,
+      pixelDataElement.dataOffset,
+      pixelDataElement.length,
+    );
   }
+  getReadableStream(buffer: Buffer, boundary: string, contentId: string,): Readable {
+    const stream = new Readable();
+  
+    const term = '\r\n';
+    const endline = `${term}--${boundary}--${term}`;
+
+    stream.push(`${term}--${boundary}${term}`);
+    stream.push(`Content-Location:localhost${term}`);
+    stream.push(`Content-ID:${contentId}${term}`);
+    stream.push(`Content-Type:application/octet-stream${term}`);
+    stream.push(term);
+    stream.push(buffer);
+    stream.push(endline);
+    stream.push(null);
+    return stream;
+  }
+
 }
