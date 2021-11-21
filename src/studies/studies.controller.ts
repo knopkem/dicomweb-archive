@@ -33,7 +33,7 @@ export class StudiesController {
     const tags = new Array<DicomTag>();
     Object.keys(query).forEach((propName) => {
       const tag = DicomDict.canonicalNameToHex(propName);
-      if (tag) {
+      if (DicomDict.hexToCanonicalName(tag)) {
         const value = query[propName];
         tags.push({ key: tag, value });
       }

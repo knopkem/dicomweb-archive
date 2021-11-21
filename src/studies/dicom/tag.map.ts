@@ -66,7 +66,7 @@ export class TagEntityMetaMap {
 
   mapToColumn(tag: string): EntityMeta {
     let entity = this.map.get(tag.toLowerCase());
-    if (!entity) throw new Error('Mapping failed');
+    if (!entity) throw new Error(`Mapping of ${tag} to db not possible`);
     entity.tag = tag;
     return entity;
   }
