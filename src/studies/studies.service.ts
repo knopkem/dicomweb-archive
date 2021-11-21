@@ -7,7 +7,7 @@ import { Series } from './entities/series.entity';
 import { Image } from './entities/image.entity';
 import { Patient } from './entities/patient.entity';
 import { TagMapSingleton } from './dicom/tag.map';
-import { QUERY_LEVEL, PRIVATE_FILENAME } from './dicom/quer.level';
+import { QUERY_LEVEL, PRIVATE_FILENAME } from './dicom/query.level';
 import { buildWhereCondition, convertToRestModel } from './sql/query.builder';
 import { EntityMeta } from './entities/entity.meta';
 import { DicomDict } from './dicom/dicom.dict';
@@ -42,7 +42,7 @@ export class StudiesService {
    */
   getEntity(tag: string): EntityMeta | undefined {
     try {
-      const tagId = DicomDict.findFromDicomName(tag);
+      const tagId = DicomDict.canonicalNameToHex(tag);
       return TagMapSingleton.mapToColumn(tagId);
     } catch (error) {
       this.logger.warn(error);
@@ -158,7 +158,7 @@ export class StudiesService {
           queryLevel = entity.level;
         }
       } else {
-        this.logger.verbose('ignoring unsupported query key: ' + tagName + ' - ' + DicomDict.findDicomName(tagName));
+        this.logger.verbose('ignoring unsupported query key: ' + tagName + ' - ' + DicomDict.hexToCanonicalName(tagName));
       }
     }
     let queryBuilder = this.patientRepository.createQueryBuilder('patient');

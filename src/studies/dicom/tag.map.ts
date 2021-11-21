@@ -1,8 +1,10 @@
 import { EntityMeta } from '../entities/entity.meta';
-import { QUERY_LEVEL, PRIVATE_FILENAME } from './quer.level';
+import { QUERY_LEVEL, PRIVATE_FILENAME } from './query.level';
 
-
-export class TagMap {
+/**
+ * A tag to entity meta mapper
+ */
+export class TagEntityMetaMap {
   map = new Map<string, EntityMeta>([
     // patient
     ['00100010', new EntityMeta(QUERY_LEVEL.PATIENT, 'patientName', 'PN')],
@@ -70,8 +72,11 @@ export class TagMap {
   }
 }
 
+/**
+ * static helper to avoid recreating the map all the time
+ */
 export class TagMapSingleton {
-  static mapper = new TagMap();
+  static mapper = new TagEntityMetaMap();
   static mapToColumn(tag: string): EntityMeta {
     return this.mapper.mapToColumn(tag);
   }

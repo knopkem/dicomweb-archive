@@ -1,4 +1,4 @@
-import { QUERY_LEVEL, tableNameForQueryLevel } from '../dicom/quer.level';
+import { QUERY_LEVEL, tableNameForQueryLevel } from '../dicom/query.level';
 
 /**
  * Entity meta relation to database

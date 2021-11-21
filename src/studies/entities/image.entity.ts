@@ -5,8 +5,7 @@ import { Series } from './series.entity';
  * The Image entity/table
  */
 @Entity()
-export class Image {
-  [key: string]: string | number | Series;
+export class Image extends BaseEntity {
 
   @PrimaryGeneratedColumn()
   id!: number;

@@ -1,7 +1,7 @@
 import { Patient } from '../entities/patient.entity';
 import { EntityMeta } from '../entities/entity.meta';
 import { QuerySyntax } from '../studies.service';
-import { QUERY_LEVEL } from '../dicom/quer.level';
+import { QUERY_LEVEL } from '../dicom/query.level';
 
 
 type RangeType = {
@@ -127,17 +127,17 @@ function createQidoFormat(entity: EntityMeta, value: any) {
 }
 
 /**
- * 
- * @param child 
- * @param select 
- * @param level 
- * @returns 
+ * Build json from QIDO results
+ * @param entity an entity
+ * @param select array of EntityMeta
+ * @param level the query level
+ * @returns json object
  */
-function getProperties(child: any, select: EntityMeta[], level: QUERY_LEVEL) {
+function getProperties(entity: any, select: EntityMeta[], level: QUERY_LEVEL) {
   const row = {};
-  for (const entity of select) {
+  for (const e of select) {
     if (entity.level !== level) continue;
-    const value = child[entity.column];
+    const value = entity[e.column];
     const p = createQidoFormat(entity, value);
     Object.assign(row, p);
   }

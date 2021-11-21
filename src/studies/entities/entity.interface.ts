@@ -1,3 +1,1 @@
-export interface BaseInterface {
-  
-}
+export interface BaseInterface { }

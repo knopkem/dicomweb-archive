@@ -10,6 +10,7 @@ export class FilesModule implements OnModuleInit {
   constructor(private fileService: FilesService) {}
   logger = new Logger('FilesModule');
 
+  // auto run on startup
   onModuleInit() {
     this.logger.verbose(`Initialization...`);
     this.fileService.import();

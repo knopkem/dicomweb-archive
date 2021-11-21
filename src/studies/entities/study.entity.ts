@@ -1,4 +1,4 @@
-import { Column, Entity, OneToMany, ManyToOne, JoinColumn, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, OneToMany, ManyToOne, JoinColumn, PrimaryGeneratedColumn, BaseEntity } from 'typeorm';
 import { Patient } from './patient.entity';
 import { Series } from './series.entity';
 
@@ -6,8 +6,7 @@ import { Series } from './series.entity';
  * The Study entity/table
  */
 @Entity()
-export class Study {
-  [key: string]: string | number | Series[] | Patient;
+export class Study extends BaseEntity {
 
   @PrimaryGeneratedColumn()
   id!: number;

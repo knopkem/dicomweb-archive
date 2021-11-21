@@ -1,12 +1,11 @@
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { BaseEntity, Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Study } from './study.entity';
 
 /**
  * The patient entity/table
  */
 @Entity()
-export class Patient {
-  [key: string]: string | number | Study[];
+export class Patient extends BaseEntity {
 
   @PrimaryGeneratedColumn()
   id!: number;

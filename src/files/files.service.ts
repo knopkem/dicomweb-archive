@@ -14,6 +14,11 @@ export class FilesService {
   constructor(private readonly studiesService: StudiesService) {}
   logger = new Logger('FilesService');
 
+  /**
+   * Parse and import a DICOM file
+   * @param filename the file path
+   * @returns void
+   */
   async importDicomFile(filename: string): Promise<void> {
     this.logger.verbose('importing: ' + filename);
     try {
@@ -81,6 +86,9 @@ export class FilesService {
     }
   }
 
+  /**
+   * Run import of DICOM files from filesystem
+   */
   async import() {
     {
       try {
