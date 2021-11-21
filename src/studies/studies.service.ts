@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { StudyDto } from './dto/study.dto';
 import { Repository, Connection, getConnection } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -362,6 +362,13 @@ export class StudiesService {
   }
 
   async getFilepath(studyUid: string, seriesUid: string, imageUid: string) {
+    this.logger.debug(` ${studyUid} / ${seriesUid} / ${imageUid}`);
+
+    if (!studyUid || !seriesUid || !imageUid) {
+      this.logger.error('missing properties');
+      throw new NotFoundException();
+    }
+
     const tags = new Array<DicomTag>();
     tags.push(new DicomTag('StudyInstanceUID', studyUid));
     tags.push(new DicomTag('SeriesInstanceUID', seriesUid));

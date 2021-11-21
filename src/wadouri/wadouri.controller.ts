@@ -18,11 +18,10 @@ export class WadouriController {
 
   @Get()
   async findAll(
-    @Query() query: any,
     @Res() res: any,
-    @Param('studyInstanceUid') studyUid: string,
-    @Param('seriesInstanceUid') seriesUid: string,
-    @Param('sopInstanceUid') imageUid: string,
+    @Query('studyUID') studyUid: string,
+    @Query('seriesUID') seriesUid: string,
+    @Query('objectUID') imageUid: string,
   ) {
     const filePath = await this.studiesService.getFilepath(
       studyUid,
@@ -33,7 +32,6 @@ export class WadouriController {
     if (!filePath) {
       throw new NotFoundException();
     }
-
     res.set('Content-type', 'application/dicom');
     const result = await this.wadouriService.serveFile(filePath);
     res.send(result);
