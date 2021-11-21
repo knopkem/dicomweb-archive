@@ -1,12 +1,11 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Patient } from './../studies/entities/patient.entity';
 import { Study } from './../studies/entities/study.entity';
-import { StudiesService, DicomTag } from './../studies/studies.service';
+import { StudiesService } from './../studies/studies.service';
 import { Series } from './../studies/entities/series.entity';
 import { Image } from './../studies/entities/image.entity';
 import * as dicomParser from 'dicom-parser';
 import * as fs from 'fs';
-import * as util from 'util';
 import * as rra from 'recursive-readdir-async';
 import * as path from 'path';
 
@@ -15,7 +14,7 @@ export class FilesService {
   constructor(private readonly studiesService: StudiesService) {}
   logger = new Logger('FilesService');
 
-  importDicomFile = async (filename: string) => {
+  async importDicomFile(filename: string): Promise<void> {
     this.logger.verbose('importing: ' + filename);
     try {
       const data = fs.readFileSync(filename);
@@ -76,7 +75,7 @@ export class FilesService {
       image.imageOrientationPatient = dataset.string('x00200037');
       image.privateFileName = filename.replace(/\\/g, '/');
 
-      await this.studiesService.createFromEntities(
+      return this.studiesService.createFromEntities(
         patient,
         study,
         series,
@@ -87,7 +86,7 @@ export class FilesService {
     }
   };
 
-  import = async () => {
+  async import() {
     {
       try {
         const directory = path.join(__filename, '../../../import');
