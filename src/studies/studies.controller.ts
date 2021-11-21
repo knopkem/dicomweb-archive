@@ -63,7 +63,7 @@ function getImageLevelTags(): Set<DicomTag> {
   return tags;
 }
 
-@Controller('rs/studies')
+@Controller(['rs/studies', 'viewer/rs/studies'])
 export class StudiesController {
   constructor(private readonly studiesService: StudiesService) {}
 

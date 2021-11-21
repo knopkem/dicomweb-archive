@@ -9,7 +9,7 @@ import {
 import { WadouriService } from './wadouri.service';
 import { StudiesService } from 'src/studies/studies.service';
 
-@Controller('rs/wadouri')
+@Controller('wadouri')
 export class WadouriController {
   constructor(
     private readonly wadouriService: WadouriService,

@@ -8,7 +8,7 @@ window.config = {
     dicomWeb: [
       {
         name: 'DICOMWEB_ARCHIVE',
-        wadoUriRoot: '/rs/wadouri',
+        wadoUriRoot: '/wadouri',
         qidoRoot: '/rs',
         wadoRoot: '/rs',
         qidoSupportsIncludeField: true,
