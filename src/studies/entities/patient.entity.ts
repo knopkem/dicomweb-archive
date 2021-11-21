@@ -8,23 +8,23 @@ import { Study } from './study.entity';
 export class Patient {
 
   @PrimaryGeneratedColumn()
-  id!: number;
+  id: number;
 
   @Column()
-  fkId!: number;
+  fkId: number;
 
   @Column()
-  patientName!: string;
+  patientName: string;
 
   @Column({ unique: true })
-  patientId!: string;
+  patientId: string;
 
   @Column({ nullable: true })
-  patientDob!: string;
+  patientDob: string;
 
   @Column({ nullable: true })
-  patientSex!: string;
+  patientSex: string;
 
   @OneToMany(() => Study, (study: Study) => study.patient)
-  studies!: Study[];
+  studies: Study[];
 }

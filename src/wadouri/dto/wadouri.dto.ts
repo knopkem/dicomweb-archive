@@ -1,15 +1,16 @@
+
 import { IsString, IsNotEmpty } from 'class-validator';
 
-export class ImageDto {
+export class WadoUriDto {
   @IsString()
   @IsNotEmpty()
-  readonly studyInstanceUid: string;
+  readonly studyUID: string;
 
   @IsString()
   @IsNotEmpty()
-  readonly seriesInstanceUid: string;
+  readonly seriesUID: string;
 
   @IsString()
   @IsNotEmpty()
-  readonly sopInstanceUid: string;
+  readonly objectUID: string;
 }

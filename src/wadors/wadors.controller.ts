@@ -3,6 +3,7 @@ import { WadorsService } from './wadors.service';
 import { StudiesService } from 'src/studies/studies.service';
 import { Response } from 'express';
 import * as crypto from 'crypto';
+import { WadoRsDto } from './dto/wadors.dto';
 
 @Controller()
 export class WadorsController {
@@ -11,13 +12,8 @@ export class WadorsController {
   logger = new Logger('WadorsController');
 
   @Get('rs/studies/:studyInstanceUid/series/:seriesInstanceUid/instances/:sopInstanceUid/frames/:frame')
-  async findAll(
-    @Res() res: Response,
-    @Param('studyInstanceUid') studyUid: string,
-    @Param('seriesInstanceUid') seriesUid: string,
-    @Param('sopInstanceUid') imageUid: string,
-  ) {
-    const filePath = await this.studiesService.getFilepath(studyUid, seriesUid, imageUid);
+  async findAll(@Res() res: Response, @Param() wadors: WadoRsDto) {
+    const filePath = await this.studiesService.getFilepath(wadors.studyInstanceUid, wadors.seriesInstanceUid, wadors.sopInstanceUid);
 
     if (!filePath) {
       this.logger.error('File not found');

@@ -9,42 +9,42 @@ import { Image } from './image.entity';
 export class Series {
 
   @PrimaryGeneratedColumn()
-  id!: number;
+  id: number;
 
   @Column()
-  fkId!: number;
+  fkId: number;
 
   @Column({ unique: true })
-  seriesInstanceUid!: string;
+  seriesInstanceUid: string;
 
   @Column({ nullable: true })
-  seriesNumber!: string;
+  seriesNumber: string;
 
   @Column({ nullable: true })
-  modality!: string;
+  modality: string;
 
   @Column({ nullable: true })
-  seriesDescription!: string;
+  seriesDescription: string;
 
   @Column({ nullable: true })
-  seriesDate!: string;
+  seriesDate: string;
 
   @Column({ nullable: true })
-  seriesTime!: string;
+  seriesTime: string;
 
   @Column({ nullable: true })
-  bodyPartExamined!: string;
+  bodyPartExamined: string;
 
   @Column({ nullable: true })
-  patientPosition!: string;
+  patientPosition: string;
 
   @Column({ nullable: true })
-  protocolName!: string;
+  protocolName: string;
 
   @ManyToOne(() => Study, (study) => study.series)
   @JoinColumn({ name: 'fkId' })
-  study!: Study;
+  study: Study;
 
   @OneToMany(() => Image, (image: Image) => image.series)
-  images!: Image[];
+  images: Image[];
 }

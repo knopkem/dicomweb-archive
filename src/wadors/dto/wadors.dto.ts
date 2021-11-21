@@ -1,6 +1,7 @@
+
 import { IsString, IsNotEmpty } from 'class-validator';
 
-export class SeriesDto {
+export class WadoRsDto {
   @IsString()
   @IsNotEmpty()
   readonly studyInstanceUid: string;
@@ -9,4 +10,7 @@ export class SeriesDto {
   @IsNotEmpty()
   readonly seriesInstanceUid: string;
 
+  @IsString()
+  @IsNotEmpty()
+  readonly sopInstanceUid: string;
 }

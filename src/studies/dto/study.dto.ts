@@ -1,3 +1,7 @@
+import { IsString, IsNotEmpty } from 'class-validator';
+
 export class StudyDto {
-  readonly uid: string = '';
+  @IsString()
+  @IsNotEmpty()
+  readonly studyInstanceUid: string;
 }

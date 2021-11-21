@@ -8,81 +8,81 @@ import { Series } from './series.entity';
 export class Image {
 
   @PrimaryGeneratedColumn()
-  id!: number;
+  id: number;
 
   @Column()
-  fkId!: number;
+  fkId: number;
 
   @Column({ unique: true })
-  sopInstanceUid!: string;
+  sopInstanceUid: string;
 
   @Column({ nullable: true })
-  sopClassUid!: string;
+  sopClassUid: string;
 
   @Column({ nullable: true })
-  instanceNumber!: string;
+  instanceNumber: string;
 
   @Column({ nullable: true })
-  sliceLocation!: string;
+  sliceLocation: string;
 
   @Column({ nullable: true })
-  imageType!: string;
+  imageType: string;
 
   @Column({ nullable: true })
-  referencedFrameNumber!: string;
+  referencedFrameNumber: string;
 
   @Column({ nullable: true })
-  numberOfFrames!: string;
+  numberOfFrames: string;
 
   @Column({ nullable: true })
-  rows!: number;
+  rows: number;
 
   @Column({ nullable: true })
-  columns!: number;
+  columns: number;
 
   @Column({ nullable: true })
-  windowWidth!: string;
+  windowWidth: string;
 
   @Column({ nullable: true })
-  windowCenter!: string;
+  windowCenter: string;
 
   @Column({ nullable: true })
   photometricInterpretation!: string;
 
   @Column({ nullable: true })
-  rescaleSlope!: string;
+  rescaleSlope: string;
 
   @Column({ nullable: true })
-  rescaleIntercept!: string;
+  rescaleIntercept: string;
 
   @Column({ nullable: true })
-  samplesPerPixel!: number;
+  samplesPerPixel: number;
 
   @Column({ nullable: true })
-  pixelSpacing!: string;
+  pixelSpacing: string;
 
   @Column({ nullable: true })
-  bitsAllocated!: number;
+  bitsAllocated: number;
 
   @Column({ nullable: true })
-  bitsStored!: number;
+  bitsStored: number;
 
   @Column({ nullable: true })
-  highBit!: number;
+  highBit: number;
 
   @Column({ nullable: true })
-  pixelRepresentation!: number;
+  pixelRepresentation: number;
 
   @Column({ nullable: true })
-  imagePositionPatient!: string;
+  imagePositionPatient: string;
 
   @Column({ nullable: true })
-  imageOrientationPatient!: string;
+  imageOrientationPatient: string;
 
   @Column({ nullable: true })
-  privateFileName!: string;
+  privateFileName: string;
 
   @ManyToOne(() => Series, (series) => series.images)
   @JoinColumn({ name: 'fkId' })
-  series!: Series;
+  series: Series;
 }

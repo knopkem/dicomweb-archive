@@ -9,48 +9,48 @@ import { Series } from './series.entity';
 export class Study {
 
   @PrimaryGeneratedColumn()
-  id!: number;
+  id: number;
 
   @Column()
-  fkId!: number;
+  fkId: number;
 
   @Column({ unique: true })
-  studyInstanceUid!: string;
+  studyInstanceUid: string;
 
   @Column({ nullable: true })
-  studyDate!: string;
+  studyDate: string;
 
   @Column({ nullable: true })
-  studyTime!: string;
+  studyTime: string;
 
   @Column({ nullable: true })
-  studyId!: string;
+  studyId: string;
 
   @Column({ nullable: true })
-  accessionNumber!: string;
+  accessionNumber: string;
 
   @Column({ nullable: true })
-  referringPhysicianName!: string;
+  referringPhysicianName: string;
 
   @Column({ nullable: true })
-  studyDescription!: string;
+  studyDescription: string;
 
   @Column({ nullable: true })
-  nameOfPhysicianReadingStudy!: string;
+  nameOfPhysicianReadingStudy: string;
 
   @Column({ nullable: true })
-  patientAge!: string;
+  patientAge: string;
 
   @Column({ nullable: true })
-  patientSize!: string;
+  patientSize: string;
 
   @Column({ nullable: true })
-  patientWeight!: string;
+  patientWeight: string;
 
   @ManyToOne(() => Patient, (patient) => patient.studies)
   @JoinColumn({ name: 'fkId' })
-  patient!: Patient;
+  patient: Patient;
 
   @OneToMany(() => Series, (series: Series) => series.study)
-  series!: Series[];
+  series: Series[];
 }

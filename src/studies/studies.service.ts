@@ -1,4 +1,4 @@
-import { Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { ForbiddenException, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { StudyDto } from './dto/study.dto';
 import { Repository, Connection, getConnection } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -11,6 +11,9 @@ import { QUERY_LEVEL, PRIVATE_FILENAME } from './dicom/query.level';
 import { buildWhereCondition, convertToRestModel } from './sql/query.builder';
 import { EntityMeta } from './entities/entity.meta';
 import { DicomDict } from './dicom/dicom.dict';
+import { validate } from 'class-validator';
+import { plainToClass } from 'class-transformer';
+import { ImageDto } from './dto/image.dto';
 
 export class DicomTag {
   constructor(public key: string, public value: string = '') {}
@@ -47,17 +50,6 @@ export class StudiesService {
     } catch (error) {
       this.logger.warn(error);
     }
-  }
-
-  /**
-   * Create a new study in the repository
-   * @param studyDto the dto
-   * @returns
-   */
-  create(studyDto: StudyDto): Promise<Study> {
-    const study = new Study();
-    study.studyInstanceUid = studyDto.uid;
-    return this.studyRepository.save(study);
   }
 
   /**
@@ -207,8 +199,16 @@ export class StudiesService {
    * @returns
    */
   async getFilepath(studyUid: string, seriesUid: string, imageUid: string) {
-    if (!studyUid || !seriesUid || !imageUid) {
-      this.logger.error(`missing properties: ${studyUid} / ${seriesUid} / ${imageUid}`);
+
+    // manually validating our input
+    const errors = await validate(plainToClass(ImageDto, {
+      studyInstanceUid: studyUid,
+      seriesInstanceUid: seriesUid,
+      sopInstanceUid: imageUid,
+    }));
+
+    if (errors.length > 0) {
+      this.logger.error(`invalid input`, JSON.stringify(errors));
       throw new NotFoundException();
     }
 

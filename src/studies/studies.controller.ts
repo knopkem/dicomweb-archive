@@ -1,6 +1,9 @@
 import { Controller, Get, Param, Query } from '@nestjs/common';
 import { StudiesService, DicomTag } from './studies.service';
 import { DicomDict } from './dicom/dicom.dict';
+import { StudyDto } from './dto/study.dto';
+import { SeriesDto } from './dto/series.dto';
+import { ImageDto } from './dto/image.dto';
 
 function getStudyLevelTags(): Set<DicomTag> {
   const tags = new Set<DicomTag>();
@@ -70,8 +73,8 @@ export class StudiesController {
 
   /**
    * Helper to parse includes
-   * @param includefield 
-   * @returns 
+   * @param includefield
+   * @returns
    */
   private parseIncludes(includefield: string | undefined): DicomTag[] {
     const tags = new Array<DicomTag>();
@@ -83,8 +86,8 @@ export class StudiesController {
 
   /**
    * Helper to parse and transform query data
-   * @param query 
-   * @returns 
+   * @param query
+   * @returns
    */
   private parseQuery(query: any): DicomTag[] {
     const tags = new Array<DicomTag>();
@@ -108,84 +111,79 @@ export class StudiesController {
   }
 
   @Get(':studyInstanceUid')
-  findOne(@Query() query: any, @Param('studyInstanceUid') studyUid: string) {
+  findOne(@Query() query: any, @Param() dto: StudyDto) {
     const tags = getStudyLevelTags();
     const queryTags = this.parseQuery(query);
     queryTags.reduce((s, e) => s.add(e), tags);
     this.parseIncludes(query.includefield).reduce((s, e) => s.add(e), tags);
-    tags.add(new DicomTag('0020000D', studyUid));
+    tags.add(new DicomTag('0020000D', dto.studyInstanceUid));
     return this.studiesService.findMeta([...tags], query.offset, query.limit);
   }
 
   @Get(':studyInstanceUid/metadata')
-  findOneStudyMeta(@Query() query: any, @Param('studyInstanceUid') studyUid: string) {
+  findOneStudyMeta(@Query() query: any, @Param() dto: StudyDto) {
     const st = getStudyLevelTags();
     const se = getSeriesLevelTags();
     const tags = new Set<DicomTag>([...st, ...se]);
     const queryTags = this.parseQuery(query);
     queryTags.reduce((s, e) => s.add(e), tags);
     this.parseIncludes(query.includefield).reduce((s, e) => s.add(e), tags);
-    tags.add(new DicomTag('0020000D', studyUid));
+    tags.add(new DicomTag('0020000D', dto.studyInstanceUid));
     return this.studiesService.findMeta([...tags], query.offset, query.limit);
   }
 
   @Get(':studyInstanceUid/series')
-  findAllSeries(@Query() query: any, @Param('studyInstanceUid') studyUid: string) {
+  findAllSeries(@Query() query: any, @Param() dto: StudyDto) {
     const tags = getSeriesLevelTags();
     const queryTags = this.parseQuery(query);
     queryTags.reduce((s, e) => s.add(e), tags);
     this.parseIncludes(query.includefield).reduce((s, e) => s.add(e), tags);
-    tags.add(new DicomTag('0020000D', studyUid));
+    tags.add(new DicomTag('0020000D', dto.studyInstanceUid));
     return this.studiesService.findMeta([...tags], query.offset, query.limit);
   }
 
   @Get(':studyInstanceUid/series/:seriesInstanceUid')
-  findOneSeries(@Query() query: any, @Param('studyInstanceUid') studyUid: string, @Param('seriesInstanceUid') seriesUid: string) {
+  findOneSeries(@Query() query: any, @Param() dto: SeriesDto) {
     const tags = getSeriesLevelTags();
     const queryTags = this.parseQuery(query);
     queryTags.reduce((s, e) => s.add(e), tags);
     this.parseIncludes(query.includefield).reduce((s, e) => s.add(e), tags);
-    tags.add(new DicomTag('0020000D', studyUid));
-    tags.add(new DicomTag('0020000E', seriesUid));
+    tags.add(new DicomTag('0020000D', dto.studyInstanceUid));
+    tags.add(new DicomTag('0020000E', dto.seriesInstanceUid));
     return this.studiesService.findMeta([...tags], query.offset, query.limit);
   }
 
   @Get(':studyInstanceUid/series/:seriesInstanceUid/instances')
-  findOneSeriesInstances(@Query() query: any, @Param('studyInstanceUid') studyUid: string, @Param('seriesInstanceUid') seriesUid: string) {
+  findOneSeriesInstances(@Query() query: any, @Param() dto: SeriesDto) {
     const tags = getImageLevelTags();
     const queryTags = this.parseQuery(query);
     queryTags.reduce((s, e) => s.add(e), tags);
     this.parseIncludes(query.includefield).reduce((s, e) => s.add(e), tags);
-    tags.add(new DicomTag('0020000D', studyUid));
-    tags.add(new DicomTag('0020000E', seriesUid));
+    tags.add(new DicomTag('0020000D', dto.studyInstanceUid));
+    tags.add(new DicomTag('0020000E', dto.seriesInstanceUid));
     return this.studiesService.findMeta([...tags], query.offset, query.limit);
   }
 
   @Get(':studyInstanceUid/series/:seriesInstanceUid/metadata')
-  findOneSeriesMeta(@Query() query: any, @Param('studyInstanceUid') studyUid: string, @Param('seriesInstanceUid') seriesUid: string) {
+  findOneSeriesMeta(@Query() query: any, @Param() dto: SeriesDto) {
     const tags = getImageLevelTags();
     const queryTags = this.parseQuery(query);
     queryTags.reduce((s, e) => s.add(e), tags);
     this.parseIncludes(query.includefield).reduce((s, e) => s.add(e), tags);
-    tags.add(new DicomTag('0020000D', studyUid));
-    tags.add(new DicomTag('0020000E', seriesUid));
+    tags.add(new DicomTag('0020000D', dto.studyInstanceUid));
+    tags.add(new DicomTag('0020000E', dto.seriesInstanceUid));
     return this.studiesService.findMeta([...tags], query.offset, query.limit);
   }
 
   @Get(':studyInstanceUid/series/:seriesInstanceUid/instances/:sopInstanceUid')
-  findOneSeriesInstance(
-    @Query() query: any,
-    @Param('studyInstanceUid') studyUid: string,
-    @Param('seriesInstanceUid') seriesUid: string,
-    @Param('sopInstanceUid') imageUid: string,
-  ) {
+  findOneSeriesInstance(@Query() query: any, @Param() dto: ImageDto) {
     const tags = getImageLevelTags();
     const queryTags = this.parseQuery(query);
     queryTags.reduce((s, e) => s.add(e), tags);
     this.parseIncludes(query.includefield).reduce((s, e) => s.add(e), tags);
-    tags.add(new DicomTag('0020000D', studyUid));
-    tags.add(new DicomTag('0020000E', seriesUid));
-    tags.add(new DicomTag('00080018', imageUid));
+    tags.add(new DicomTag('0020000D', dto.studyInstanceUid));
+    tags.add(new DicomTag('0020000E', dto.seriesInstanceUid));
+    tags.add(new DicomTag('00080018', dto.sopInstanceUid));
     return this.studiesService.findMeta([...tags], query.offset, query.limit);
   }
 }
