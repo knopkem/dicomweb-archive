@@ -1,5 +1,6 @@
 import { Controller, Get, Param, Query } from '@nestjs/common';
 import { StudiesService, DicomTag } from './studies.service';
+import { DicomDict } from './dicom/dicom.dict';
 
 function getStudyLevelTags(): Set<DicomTag> {
   const tags = new Set<DicomTag>();
@@ -67,20 +68,28 @@ function getImageLevelTags(): Set<DicomTag> {
 export class StudiesController {
   constructor(private readonly studiesService: StudiesService) {}
 
+  /**
+   * Helper to parse includes
+   * @param includefield 
+   * @returns 
+   */
   private parseIncludes(includefield: string | undefined): DicomTag[] {
     const tags = new Array<DicomTag>();
     if (includefield) {
-      tags.push(
-        ...includefield.split(',').map((elem: string) => new DicomTag(elem)),
-      );
+      tags.push(...includefield.split(',').map((elem: string) => new DicomTag(elem)));
     }
     return tags;
   }
 
+  /**
+   * Helper to parse and transform query data
+   * @param query 
+   * @returns 
+   */
   private parseQuery(query: any): DicomTag[] {
     const tags = new Array<DicomTag>();
     Object.keys(query).forEach((propName) => {
-      const tag = this.studiesService.findFromDicomName(propName);
+      const tag = DicomDict.findFromDicomName(propName);
       if (tag) {
         const value = query[propName];
         tags.push({ key: tag, value });
@@ -91,7 +100,6 @@ export class StudiesController {
 
   @Get()
   findAll(@Query() query: any) {
-    console.log(query);
     const tags = getStudyLevelTags();
     const queryTags = this.parseQuery(query);
     queryTags.reduce((s, e) => s.add(e), tags);
@@ -110,10 +118,7 @@ export class StudiesController {
   }
 
   @Get(':studyInstanceUid/metadata')
-  findOneStudyMeta(
-    @Query() query: any,
-    @Param('studyInstanceUid') studyUid: string,
-  ) {
+  findOneStudyMeta(@Query() query: any, @Param('studyInstanceUid') studyUid: string) {
     const st = getStudyLevelTags();
     const se = getSeriesLevelTags();
     const tags = new Set<DicomTag>([...st, ...se]);
@@ -125,10 +130,7 @@ export class StudiesController {
   }
 
   @Get(':studyInstanceUid/series')
-  findAllSeries(
-    @Query() query: any,
-    @Param('studyInstanceUid') studyUid: string,
-  ) {
+  findAllSeries(@Query() query: any, @Param('studyInstanceUid') studyUid: string) {
     const tags = getSeriesLevelTags();
     const queryTags = this.parseQuery(query);
     queryTags.reduce((s, e) => s.add(e), tags);
@@ -138,11 +140,7 @@ export class StudiesController {
   }
 
   @Get(':studyInstanceUid/series/:seriesInstanceUid')
-  findOneSeries(
-    @Query() query: any,
-    @Param('studyInstanceUid') studyUid: string,
-    @Param('seriesInstanceUid') seriesUid: string,
-  ) {
+  findOneSeries(@Query() query: any, @Param('studyInstanceUid') studyUid: string, @Param('seriesInstanceUid') seriesUid: string) {
     const tags = getSeriesLevelTags();
     const queryTags = this.parseQuery(query);
     queryTags.reduce((s, e) => s.add(e), tags);
@@ -153,11 +151,7 @@ export class StudiesController {
   }
 
   @Get(':studyInstanceUid/series/:seriesInstanceUid/instances')
-  findOneSeriesInstances(
-    @Query() query: any,
-    @Param('studyInstanceUid') studyUid: string,
-    @Param('seriesInstanceUid') seriesUid: string,
-  ) {
+  findOneSeriesInstances(@Query() query: any, @Param('studyInstanceUid') studyUid: string, @Param('seriesInstanceUid') seriesUid: string) {
     const tags = getImageLevelTags();
     const queryTags = this.parseQuery(query);
     queryTags.reduce((s, e) => s.add(e), tags);
@@ -168,11 +162,7 @@ export class StudiesController {
   }
 
   @Get(':studyInstanceUid/series/:seriesInstanceUid/metadata')
-  findOneSeriesMeta(
-    @Query() query: any,
-    @Param('studyInstanceUid') studyUid: string,
-    @Param('seriesInstanceUid') seriesUid: string,
-  ) {
+  findOneSeriesMeta(@Query() query: any, @Param('studyInstanceUid') studyUid: string, @Param('seriesInstanceUid') seriesUid: string) {
     const tags = getImageLevelTags();
     const queryTags = this.parseQuery(query);
     queryTags.reduce((s, e) => s.add(e), tags);

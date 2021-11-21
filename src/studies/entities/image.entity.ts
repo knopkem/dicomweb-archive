@@ -1,12 +1,9 @@
-import {
-  Column,
-  Entity,
-  JoinColumn,
-  ManyToOne,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { BaseEntity, Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { Series } from './series.entity';
 
+/**
+ * The Image entity/table
+ */
 @Entity()
 export class Image {
   [key: string]: string | number | Series;

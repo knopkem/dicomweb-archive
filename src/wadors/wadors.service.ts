@@ -5,22 +5,16 @@ import * as fs from 'fs';
 
 @Injectable()
 export class WadorsService {
-
-
   async getPixelBufferFromFile(filePath: string): Promise<Buffer> {
     // read file from file system and extract pixel buffer
     const data = await fs.promises.readFile(filePath);
     const dataset = dicomParser.parseDicom(data);
     const pixelDataElement = dataset.elements.x7fe00010;
-    return Buffer.from(
-      dataset.byteArray.buffer,
-      pixelDataElement.dataOffset,
-      pixelDataElement.length,
-    );
+    return Buffer.from(dataset.byteArray.buffer, pixelDataElement.dataOffset, pixelDataElement.length);
   }
-  getReadableStream(buffer: Buffer, boundary: string, contentId: string,): Readable {
+  getReadableStream(buffer: Buffer, boundary: string, contentId: string): Readable {
     const stream = new Readable();
-  
+
     const term = '\r\n';
     const endline = `${term}--${boundary}--${term}`;
 
@@ -34,5 +28,4 @@ export class WadorsService {
     stream.push(null);
     return stream;
   }
-
 }

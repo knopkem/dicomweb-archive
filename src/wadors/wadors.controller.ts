@@ -1,11 +1,4 @@
-import {
-  Controller,
-  Get,
-  Logger,
-  NotFoundException,
-  Param,
-  Res,
-} from '@nestjs/common';
+import { Controller, Get, Logger, NotFoundException, Param, Res } from '@nestjs/common';
 import { WadorsService } from './wadors.service';
 import { StudiesService } from 'src/studies/studies.service';
 import { Response } from 'express';
@@ -13,10 +6,7 @@ import * as crypto from 'crypto';
 
 @Controller()
 export class WadorsController {
-  constructor(
-    private readonly wadorsService: WadorsService,
-    private readonly studiesService: StudiesService,
-  ) {}
+  constructor(private readonly wadorsService: WadorsService, private readonly studiesService: StudiesService) {}
 
   logger = new Logger('WadorsController');
 
@@ -27,11 +17,7 @@ export class WadorsController {
     @Param('seriesInstanceUid') seriesUid: string,
     @Param('sopInstanceUid') imageUid: string,
   ) {
-    const filePath = await this.studiesService.getFilepath(
-      studyUid,
-      seriesUid,
-      imageUid,
-    );
+    const filePath = await this.studiesService.getFilepath(studyUid, seriesUid, imageUid);
 
     if (!filePath) {
       this.logger.error('File not found');
@@ -45,6 +31,5 @@ export class WadorsController {
     const buffer = await this.wadorsService.getPixelBufferFromFile(filePath);
     const stream = this.wadorsService.getReadableStream(buffer, boundary, contentId);
     stream.pipe(res);
-
   }
 }

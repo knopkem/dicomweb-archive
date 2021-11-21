@@ -75,16 +75,11 @@ export class FilesService {
       image.imageOrientationPatient = dataset.string('x00200037');
       image.privateFileName = filename.replace(/\\/g, '/');
 
-      return this.studiesService.createFromEntities(
-        patient,
-        study,
-        series,
-        image,
-      );
+      return this.studiesService.createFromEntities(patient, study, series, image);
     } catch (error) {
       this.logger.error(error);
     }
-  };
+  }
 
   async import() {
     {
@@ -97,8 +92,8 @@ export class FilesService {
           }
         }
       } catch (error) {
-        console.error(error);
+        this.logger.error(error);
       }
     }
-  };
+  }
 }

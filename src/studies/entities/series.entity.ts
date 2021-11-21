@@ -1,14 +1,10 @@
-import {
-  Column,
-  Entity,
-  JoinColumn,
-  ManyToOne,
-  OneToMany,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Study } from './study.entity';
 import { Image } from './image.entity';
 
+/**
+ * The Series entity/table
+ */
 @Entity()
 export class Series {
   [key: string]: string | number | Study | Image[];

@@ -1,5 +1,7 @@
 {
   "singleQuote": true,
   "trailingComma": "all",
-  "endOfLine": "auto"
+  "endOfLine": "auto",  
+  "printWidth": 150,
+  "proseWrap": "never"
 }
