@@ -34,6 +34,11 @@ export class EntityMeta {
     return this.vr == 'DS';
   }
 
+  isAllowedForWildcardSearchVr() {
+    const arr = ['AE', 'CS', 'LO', 'LT', 'PN', 'SH', 'ST', 'UC', 'UR', 'UT'];
+    return arr.includes(this.vr);
+  }
+
   // returns the column name with table prefix
   canonicalColumnName(): string {
     return tableNameForQueryLevel(this.level) + '.' + this.column;

@@ -87,7 +87,7 @@ export function buildWhereCondition(entity: EntityMeta, value: string): QuerySyn
   if (entity.isDateOrTimeVr()) {
     return buildWhereRange(entity, value);
   }
-  if (entity.isPatientNameVr() && containsWildcardCharacters(value)) {
+  if (entity.isAllowedForWildcardSearchVr() && containsWildcardCharacters(value)) {
     return buildWhereLike(entity, value);
   }
   return buildWhereEqual(entity, value);

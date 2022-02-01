@@ -106,7 +106,10 @@ export class StudiesController {
 
   @Get(':studyInstanceUid/series/:seriesInstanceUid/metadata')
   findOneSeriesMeta(@Query() query: any, @Param() dto: SeriesDto) {
-    const tags = getImageLevelTags();
+    const st = getStudyLevelTags();
+    const se = getSeriesLevelTags();
+    const im = getImageLevelTags();
+    const tags = new Set<DicomTag>([...st, ...se, ...im]);
     const queryTags = this.parseQuery(query);
     queryTags.reduce((s, e) => s.add(e), tags);
     this.parseIncludes(query.includefield).reduce((s, e) => s.add(e), tags);
