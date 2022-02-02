@@ -57,7 +57,7 @@
     "@nestjs/serve-static": "^2.2.2",
     "@nestjs/typeorm": "^8.0.2",
     "@types/express-serve-static-core": "^4.17.21",
-    "class-transformer": "^0.4.0",
+    "class-transformer": "^0.5.1",
     "class-validator": "^0.13.1",
     "dicom-data-dictionary": "^0.3.1",
     "dicom-parser": "^1.8.11",
