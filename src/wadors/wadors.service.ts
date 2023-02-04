@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import * as dicomParser from 'dicom-parser';
+import * as dicomParser from '@knopkem/dicom-parser';
 import { Readable } from 'stream';
 import * as fs from 'fs';
 
