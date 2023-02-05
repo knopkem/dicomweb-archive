@@ -1,9 +1,6 @@
 {
-  "type": "postgres",
+  "type": "better-sqlite3",
   "host": "localhost",
-  "port": 5432,
-  "username": "postgres",
-  "password": "postgres",
   "database": "dicomweb",
   "synchronize": true
 }

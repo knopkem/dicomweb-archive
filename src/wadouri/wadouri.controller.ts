@@ -1,6 +1,6 @@
 import { Controller, Get, Header, Logger, NotFoundException, Query, Res } from '@nestjs/common';
 import { WadouriService } from './wadouri.service';
-import { StudiesService } from 'src/studies/studies.service';
+import { StudiesService } from '../studies/studies.service';
 import { Response } from 'express';
 import { WadoUriDto } from './dto/wadouri.dto';
 

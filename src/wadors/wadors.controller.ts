@@ -1,6 +1,6 @@
 import { Controller, Get, Logger, NotFoundException, Param, Res } from '@nestjs/common';
 import { WadorsService } from './wadors.service';
-import { StudiesService } from 'src/studies/studies.service';
+import { StudiesService } from '../studies/studies.service';
 import { Response } from 'express';
 import * as crypto from 'crypto';
 import { WadoRsDto } from './dto/wadors.dto';

@@ -1,0 +1,9 @@
+{
+  "type": "mariadb",
+  "host": "localhost",
+  "port": 3306,
+  "username": "mariadb",
+  "password": "mariadb",
+  "database": "dicomweb",
+  "synchronize": true
+}

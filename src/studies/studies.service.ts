@@ -1,7 +1,7 @@
 import { ForbiddenException, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { StudyDto } from './dto/study.dto';
 import { Repository, Connection, getConnection } from 'typeorm';
-import { InjectRepository } from '@nestjs/typeorm';
+import { InjectConnection, InjectRepository } from '@nestjs/typeorm';
 import { Study } from './entities/study.entity';
 import { Series } from './entities/series.entity';
 import { Image } from './entities/image.entity';
@@ -26,7 +26,7 @@ export class QuerySyntax {
 @Injectable()
 export class StudiesService {
   constructor(
-    private connection: Connection,
+    @InjectConnection() private connection: Connection,
     @InjectRepository(Patient)
     private readonly patientRepository: Repository<Patient>,
     @InjectRepository(Study)
