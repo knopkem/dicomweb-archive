@@ -1,6 +1,10 @@
 # compiled output
 /dist
 /node_modules
+dicomweb
+dicomweb-shm
+dicomweb-wal
+
 
 # Logs
 logs
