@@ -7,6 +7,7 @@ import { WadorsModule } from './wadors/wadors.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { getConnectionOptions } from 'typeorm';
+import { ScpModule } from './scp/scp.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { getConnectionOptions } from 'typeorm';
     FilesModule,
     WadouriModule,
     WadorsModule,
+    ScpModule,
   ],
   controllers: [],
   providers: [],
