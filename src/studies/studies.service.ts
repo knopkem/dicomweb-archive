@@ -132,8 +132,8 @@ export class StudiesService {
    * @returns
    */
   async findMeta(tags: Array<DicomTag>, offset: number, limit: number) {
-    const conditions = new Array<QuerySyntax>();
-    const select = new Array<EntityMeta>();
+    const conditions = new Set<QuerySyntax>();
+    const select = new Set<EntityMeta>();
 
     let queryLevel = QUERY_LEVEL.PATIENT;
     for (const t of tags) {
@@ -143,9 +143,9 @@ export class StudiesService {
       const entity = this.getEntity(tagName);
       if (entity) {
         if (t.value) {
-          conditions.push(buildWhereCondition(entity, tagValue));
+          conditions.add(buildWhereCondition(entity, tagValue));
         }
-        select.push(entity);
+        select.add(entity);
         if (queryLevel < entity.level) {
           queryLevel = entity.level;
         }
@@ -185,10 +185,11 @@ export class StudiesService {
     for (const querySyntax of conditions) {
       queryBuilder = queryBuilder.andWhere(querySyntax.queryString, querySyntax.json);
     }
+
     const patients = await queryBuilder.getMany();
 
     // we want the result in the QIDO REST Model format
-    return convertToRestModel(select, patients);
+    return convertToRestModel(Array.from(select.values()), patients);
   }
 
   /**

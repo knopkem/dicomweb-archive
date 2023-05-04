@@ -41,6 +41,6 @@ export class EntityMeta {
 
   // returns the column name with table prefix
   canonicalColumnName(): string {
-    return tableNameForQueryLevel(this.level) + '.' + this.column;
+    return `(${tableNameForQueryLevel(this.level)}.${this.column})`;
   }
 }
