@@ -51,9 +51,9 @@
   ],
   "dependencies": {
     "@knopkem/dicom-parser": "^1.8.15",
-    "@nestjs/common": "^9.4.0",
-    "@nestjs/core": "^9.4.0",
-    "@nestjs/platform-express": "^9.4.0",
+    "@nestjs/common": "^9.4.1",
+    "@nestjs/core": "^9.4.1",
+    "@nestjs/platform-express": "^9.4.1",
     "@nestjs/serve-static": "^3.0.1",
     "@nestjs/typeorm": "^9.0.1",
     "@types/express-serve-static-core": "^4.17.34",
