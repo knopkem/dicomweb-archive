@@ -51,6 +51,6 @@ export class Study {
   @JoinColumn({ name: 'fkId' })
   patient: Patient;
 
-  @OneToMany(() => Series, (series: Series) => series.study)
+  @OneToMany('Series', 'study')
   series: Series[];
 }

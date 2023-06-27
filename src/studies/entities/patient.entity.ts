@@ -25,6 +25,6 @@ export class Patient {
   @Column({ nullable: true })
   patientSex: string;
 
-  @OneToMany(() => Study, (study: Study) => study.patient)
+  @OneToMany('Study', 'patient')
   studies: Study[];
 }

@@ -45,6 +45,6 @@ export class Series {
   @JoinColumn({ name: 'fkId' })
   study: Study;
 
-  @OneToMany(() => Image, (image: Image) => image.series)
+  @OneToMany('Image', 'series')
   images: Image[];
 }
