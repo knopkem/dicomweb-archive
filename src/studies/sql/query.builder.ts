@@ -43,8 +43,8 @@ export function buildWhereEqual(entity: EntityMeta, value: string): QuerySyntax 
  * @returns 
  */
 export function buildWhereLike(entity: EntityMeta, value: string): QuerySyntax {
-  return new QuerySyntax(entity.canonicalColumnName() + ' ILIKE :' + entity.column, {
-    [entity.column]: replaceWildcardCharacters(value),
+  return new QuerySyntax(`UPPER(${entity.canonicalColumnName()}) LIKE :${entity.column}`, {
+    [entity.column]: replaceWildcardCharacters(value).toUpperCase(),
   });
 }
 
