@@ -32,7 +32,7 @@ export function splitStringToRange(value: string): RangeType {
  */
 export function buildWhereEqual(entity: EntityMeta, value: string): QuerySyntax {
   return new QuerySyntax(entity.canonicalColumnName() + ' = :' + entity.column, {
-    [entity.column]: value,
+    [entity.column]: cleanWildcardCharacters(value),
   });
 }
 
@@ -65,7 +65,16 @@ export function buildWhereRange(entity: EntityMeta, value: string): QuerySyntax 
  * @returns the update value
  */
 export function replaceWildcardCharacters(value: string): string {
-  return value.replace('*', '%').replace('?', '_').replace('^', '_').replace(' ', '_');
+  return value.replaceAll('*', '%').replaceAll('?', '_').replaceAll('^', '_').replaceAll(' ', '_');
+}
+
+/**
+ * DICOM wildcard to SQL wildcard formatting
+ * @param value the original value
+ * @returns the update value
+ */
+export function cleanWildcardCharacters(value: string): string {
+  return value.replaceAll('*', '').replaceAll('?', '');
 }
 
 /**
