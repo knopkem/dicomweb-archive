@@ -109,8 +109,8 @@ export function buildWhereCondition(entity: EntityMeta, value: string): QuerySyn
  * @returns 
  */
 function createQidoFormat(entity: EntityMeta, value: any) {
-  if (!value) {
-    value = '';
+  if (value === undefined || value === null) {
+    return;
   }
   if (entity.isPatientNameVr()) {
     value = {
@@ -148,7 +148,9 @@ function getProperties(entity: any, select: EntityMeta[], level: QUERY_LEVEL) {
     if (e.level !== level) continue;
     const value = entity[e.column];
     const p = createQidoFormat(e, value);
-    Object.assign(row, p);
+    if (p) {
+      Object.assign(row, p);
+    }
   }
   return row;
 }
