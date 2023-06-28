@@ -131,7 +131,7 @@ export class StudiesService {
    * @param limit  truncate result to limit
    * @returns
    */
-  async findMeta(tags: Array<DicomTag>, offset: number, limit: number) {
+  async findMeta(tags: Array<DicomTag>, level: QUERY_LEVEL, offset: number, limit: number) {
     const conditions = new Set<QuerySyntax>();
     const select = new Set<EntityMeta>();
 
@@ -189,7 +189,7 @@ export class StudiesService {
     const patients = await queryBuilder.getMany();
 
     // we want the result in the QIDO REST Model format
-    return convertToRestModel(Array.from(select.values()), patients);
+    return convertToRestModel(Array.from(select.values()), patients, level);
   }
 
   /**
@@ -221,7 +221,7 @@ export class StudiesService {
     ];
 
     // get filepath via the meta lookup
-    const fileMeta = await this.findMeta(tags, 0, 0);
+    const fileMeta = await this.findMeta(tags, QUERY_LEVEL.IMAGE, 0, 0);
     if (!fileMeta || fileMeta.length === 0) {
       return null;
     }

@@ -5,6 +5,7 @@ import { StudyDto } from './dto/study.dto';
 import { SeriesDto } from './dto/series.dto';
 import { ImageDto } from './dto/image.dto';
 import { getStudyLevelTags, getSeriesLevelTags, getImageLevelTags } from './dicom/dicom.tags';
+import { QUERY_LEVEL } from './dicom/query.level';
 
 
 @Controller(['rs/studies', 'viewer/rs/studies'])
@@ -47,7 +48,7 @@ export class StudiesController {
     const queryTags = this.parseQuery(query);
     queryTags.reduce((s, e) => s.add(e), tags);
     this.parseIncludes(query.includefield).reduce((s, e) => s.add(e), tags);
-    return this.studiesService.findMeta([...tags], query.offset, query.limit);
+    return this.studiesService.findMeta([...tags], QUERY_LEVEL.STUDY, query.offset, query.limit);
   }
 
   @Get(':studyInstanceUid')
@@ -57,7 +58,7 @@ export class StudiesController {
     queryTags.reduce((s, e) => s.add(e), tags);
     this.parseIncludes(query.includefield).reduce((s, e) => s.add(e), tags);
     tags.add(new DicomTag('0020000D', dto.studyInstanceUid));
-    return this.studiesService.findMeta([...tags], query.offset, query.limit);
+    return this.studiesService.findMeta([...tags], QUERY_LEVEL.STUDY, query.offset, query.limit);
   }
 
   @Get(':studyInstanceUid/metadata')
@@ -69,7 +70,7 @@ export class StudiesController {
     queryTags.reduce((s, e) => s.add(e), tags);
     this.parseIncludes(query.includefield).reduce((s, e) => s.add(e), tags);
     tags.add(new DicomTag('0020000D', dto.studyInstanceUid));
-    return this.studiesService.findMeta([...tags], query.offset, query.limit);
+    return this.studiesService.findMeta([...tags], QUERY_LEVEL.STUDY, query.offset, query.limit);
   }
 
   @Get(':studyInstanceUid/series')
@@ -79,7 +80,7 @@ export class StudiesController {
     queryTags.reduce((s, e) => s.add(e), tags);
     this.parseIncludes(query.includefield).reduce((s, e) => s.add(e), tags);
     tags.add(new DicomTag('0020000D', dto.studyInstanceUid));
-    return this.studiesService.findMeta([...tags], query.offset, query.limit);
+    return this.studiesService.findMeta([...tags], QUERY_LEVEL.SERIES, query.offset, query.limit);
   }
 
   @Get(':studyInstanceUid/series/:seriesInstanceUid')
@@ -90,7 +91,7 @@ export class StudiesController {
     this.parseIncludes(query.includefield).reduce((s, e) => s.add(e), tags);
     tags.add(new DicomTag('0020000D', dto.studyInstanceUid));
     tags.add(new DicomTag('0020000E', dto.seriesInstanceUid));
-    return this.studiesService.findMeta([...tags], query.offset, query.limit);
+    return this.studiesService.findMeta([...tags], QUERY_LEVEL.SERIES, query.offset, query.limit);
   }
 
   @Get(':studyInstanceUid/series/:seriesInstanceUid/instances')
@@ -101,7 +102,7 @@ export class StudiesController {
     this.parseIncludes(query.includefield).reduce((s, e) => s.add(e), tags);
     tags.add(new DicomTag('0020000D', dto.studyInstanceUid));
     tags.add(new DicomTag('0020000E', dto.seriesInstanceUid));
-    return this.studiesService.findMeta([...tags], query.offset, query.limit);
+    return this.studiesService.findMeta([...tags], QUERY_LEVEL.IMAGE, query.offset, query.limit);
   }
 
   @Get(':studyInstanceUid/series/:seriesInstanceUid/metadata')
@@ -115,7 +116,7 @@ export class StudiesController {
     this.parseIncludes(query.includefield).reduce((s, e) => s.add(e), tags);
     tags.add(new DicomTag('0020000D', dto.studyInstanceUid));
     tags.add(new DicomTag('0020000E', dto.seriesInstanceUid));
-    return this.studiesService.findMeta([...tags], query.offset, query.limit);
+    return this.studiesService.findMeta([...tags], QUERY_LEVEL.IMAGE, query.offset, query.limit);
   }
 
   @Get(':studyInstanceUid/series/:seriesInstanceUid/instances/:sopInstanceUid')
@@ -127,6 +128,6 @@ export class StudiesController {
     tags.add(new DicomTag('0020000D', dto.studyInstanceUid));
     tags.add(new DicomTag('0020000E', dto.seriesInstanceUid));
     tags.add(new DicomTag('00080018', dto.sopInstanceUid));
-    return this.studiesService.findMeta([...tags], query.offset, query.limit);
+    return this.studiesService.findMeta([...tags], QUERY_LEVEL.IMAGE, query.offset, query.limit);
   }
 }

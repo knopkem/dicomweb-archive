@@ -1,6 +1,7 @@
 dicomweb
 dicomweb-shm
 dicomweb-wal
+dicomweb-journal
 
 # compiled output
 /dist

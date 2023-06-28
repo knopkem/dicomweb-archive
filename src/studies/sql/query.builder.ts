@@ -144,8 +144,8 @@ function createQidoFormat(entity: EntityMeta, value: any) {
  */
 function getProperties(entity: any, select: EntityMeta[], level: QUERY_LEVEL) {
   const row = {};
-  for (const e of select) {
-    if (e.level !== level) continue;
+  const filtered = select.filter(f => f.level === level);
+  for (const e of filtered) {
     const value = entity[e.column];
     const p = createQidoFormat(e, value);
     if (p) {
@@ -161,12 +161,12 @@ function getProperties(entity: any, select: EntityMeta[], level: QUERY_LEVEL) {
  * @param patients 
  * @returns 
  */
-export function convertToRestModel(select: EntityMeta[], patients: Patient[]) {
+export function convertToRestModel(select: EntityMeta[], patients: Patient[], level: QUERY_LEVEL) {
   const result = [];
 
   for (const patient of patients) {
     const pRow = getProperties(patient, select, QUERY_LEVEL.PATIENT);
-    if (!patient.studies) {
+    if (!patient.studies || level === QUERY_LEVEL.PATIENT) {
       result.push(pRow);
       continue;
     }
@@ -174,7 +174,7 @@ export function convertToRestModel(select: EntityMeta[], patients: Patient[]) {
       const stRow = getProperties(study, select, QUERY_LEVEL.STUDY);
       const pObj = JSON.parse(JSON.stringify(pRow));
       Object.assign(pObj, stRow);
-      if (!study.series) {
+      if (!study.series || level === QUERY_LEVEL.STUDY) {
         result.push(pObj);
         continue;
       }
@@ -182,7 +182,7 @@ export function convertToRestModel(select: EntityMeta[], patients: Patient[]) {
         const serRow = getProperties(series, select, QUERY_LEVEL.SERIES);
         const stObj = JSON.parse(JSON.stringify(pObj));
         Object.assign(stObj, serRow);
-        if (!series.images) {
+        if (!series.images || level === QUERY_LEVEL.SERIES) {
           result.push(stObj);
           continue;
         }
@@ -190,7 +190,9 @@ export function convertToRestModel(select: EntityMeta[], patients: Patient[]) {
           const imgRow = getProperties(image, select, QUERY_LEVEL.IMAGE);
           const serObj = JSON.parse(JSON.stringify(stObj));
           Object.assign(serObj, imgRow);
-          result.push(serObj);
+          if (level === QUERY_LEVEL.IMAGE) {
+            result.push(serObj);
+          }
         }
       }
     }
