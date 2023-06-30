@@ -5,6 +5,7 @@ dicomweb-journal
 
 # compiled output
 /dist
+/import
 /node_modules
 dicomweb
 dicomweb-shm

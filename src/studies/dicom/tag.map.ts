@@ -70,6 +70,10 @@ export class TagEntityMetaMap {
     entity.tag = tag;
     return entity;
   }
+  contains(tag: string): boolean {
+    const item = this.map.get(tag.toLowerCase());
+    return item ? true : false;
+  }
 }
 
 /**
@@ -79,5 +83,8 @@ export class TagMapSingleton {
   static mapper = new TagEntityMetaMap();
   static mapToColumn(tag: string): EntityMeta {
     return this.mapper.mapToColumn(tag);
+  }
+  static contains(tag: string): boolean {
+    return this.mapper.contains(tag);
   }
 }

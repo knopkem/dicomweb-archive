@@ -44,8 +44,9 @@ export class StudiesService {
    * @returns
    */
   getEntity(tag: string): EntityMeta | undefined {
+    const tagId = DicomDict.canonicalNameToHex(tag);
+    if (!TagMapSingleton.contains(tagId)) return;
     try {
-      const tagId = DicomDict.canonicalNameToHex(tag);
       return TagMapSingleton.mapToColumn(tagId);
     } catch (error) {
       this.logger.warn(error);
@@ -67,7 +68,7 @@ export class StudiesService {
     try {
       patient.fkId = 0;
       let resPatient = await this.patientRepository.findOne({
-        where: { patientId: patient.patientId },
+        where: { patientId: patient.patientId, patientDob: patient.patientDob, patientSex: patient.patientSex },
       });
       if (!resPatient) {
         resPatient = await queryRunner.manager.save(patient);

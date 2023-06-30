@@ -31,6 +31,10 @@ export class FilesService {
       patient.patientDob = dataset.string('x00100030')!;
       patient.patientSex = dataset.string('x00100040')!;
 
+      if (patient.patientId === undefined && (patient.patientSex === undefined || patient.patientDob === undefined)) {
+        throw new Error(`Missing patientId and patientSex/dob, ignoring image`);
+      }
+
       const study = new Study();
       study.studyInstanceUid = dataset.string('x0020000d')!;
       study.studyDate = dataset.string('x00080020')!;
@@ -44,6 +48,10 @@ export class FilesService {
       study.patientSize = dataset.string('x00101020')!;
       study.patientWeight = dataset.string('x00101030')!;
 
+      if (study.studyInstanceUid === undefined) {
+        throw new Error(`StudyInstanceUID missing, ignoring image`);
+      }
+
       const series = new Series();
       series.seriesInstanceUid = dataset.string('x0020000e')!;
       series.seriesNumber = dataset.string('x00200011')!;
@@ -54,6 +62,10 @@ export class FilesService {
       series.bodyPartExamined = dataset.string('x00180015')!;
       series.patientPosition = dataset.string('x00185100')!;
       series.protocolName = dataset.string('x00181030')!;
+
+      if (series.seriesInstanceUid === undefined) {
+        throw new Error(`SeriesInstanceUID missing, ignoring image`);
+      }
 
       const image = new Image();
       image.sopInstanceUid = dataset.string('x00080018')!;
@@ -79,6 +91,10 @@ export class FilesService {
       image.imagePositionPatient = dataset.string('x00200032')!;
       image.imageOrientationPatient = dataset.string('x00200037')!;
       image.privateFileName = filename.replace(/\\/g, '/');
+      
+      if (image.sopInstanceUid === undefined) {
+        throw new Error(`SOPInstanceUID missing, ignoring image`);
+      }
 
       return this.studiesService.createFromEntities(patient, study, series, image);
     } catch (error) {
