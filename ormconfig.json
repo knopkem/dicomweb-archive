@@ -2,5 +2,6 @@
   "type": "better-sqlite3",
   "host": "localhost",
   "database": "dicomweb",
-  "synchronize": true
+  "synchronize": true,
+  "entities": ["dist/studies/entities/*.entity{.ts,.js}"]
 }
