@@ -6,7 +6,6 @@ import { WadouriModule } from './wadouri/wadouri.module';
 import { WadorsModule } from './wadors/wadors.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
-import { DataSource } from 'typeorm';
 import { ScpModule } from './scp/scp.module';
 import { readFile, readFileSync } from 'fs';
 
@@ -25,20 +24,10 @@ import { readFile, readFileSync } from 'fs';
           host: ormconfig['host'],
           database: ormconfig['database'],
           synchronize: ['true', true].includes(ormconfig['synchronize']) ? true : false,
-          entities: ormconfig['entities'] ? ormconfig['entities'] : [__dirname + '/studies/entities/*.entity{.ts,.js}'],
+          autoLoadEntities: true,
         };
       },
     }),
-    // is you use sqlite database
-    // TypeOrmModule.forRootAsync({
-    //   useFactory: () => ({
-    //     type: 'better-sqlite3',
-    //     host: 'localhost',
-    //     database: 'dicomweb',
-    //     synchronize: true,
-    //     entities: [__dirname + '/studies/entities/*.entity{.ts,.js}'],
-    //   }),
-    // }),
     StudiesModule,
     FilesModule,
     WadouriModule,

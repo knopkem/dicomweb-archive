@@ -158,13 +158,13 @@ export class StudiesService {
 
     // join tables depending on level
     if (queryLevel >= QUERY_LEVEL.STUDY) {
-      queryBuilder.innerJoinAndSelect('patient.studies', 'study');
+      queryBuilder = queryBuilder.innerJoinAndSelect('patient.studies', 'study');
     }
     if (queryLevel >= QUERY_LEVEL.SERIES) {
-      queryBuilder.innerJoinAndSelect('study.series', 'series');
+      queryBuilder = queryBuilder.innerJoinAndSelect('study.series', 'series');
     }
     if (queryLevel >= QUERY_LEVEL.IMAGE) {
-      queryBuilder.innerJoinAndSelect('series.images', 'image');
+      queryBuilder = queryBuilder.innerJoinAndSelect('series.images', 'image');
     }
 
     // for pagination, start at offset
