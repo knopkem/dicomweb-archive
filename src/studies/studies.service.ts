@@ -1,7 +1,7 @@
 import { ForbiddenException, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { StudyDto } from './dto/study.dto';
-import { Repository, Connection, getConnection } from 'typeorm';
-import { InjectConnection, InjectRepository } from '@nestjs/typeorm';
+import { Repository, DataSource } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
 import { Study } from './entities/study.entity';
 import { Series } from './entities/series.entity';
 import { Image } from './entities/image.entity';
@@ -26,7 +26,7 @@ export class QuerySyntax {
 @Injectable()
 export class StudiesService {
   constructor(
-    @InjectConnection() private connection: Connection,
+    private readonly defaultDataSource: DataSource,
     @InjectRepository(Patient)
     private readonly patientRepository: Repository<Patient>,
     @InjectRepository(Study)
@@ -61,7 +61,7 @@ export class StudiesService {
    * @param image entity for image meta
    */
   async createFromEntities(patient: Patient, study: Study, series: Series, image: Image): Promise<void> {
-    const queryRunner = this.connection.createQueryRunner();
+    const queryRunner = this.defaultDataSource.createQueryRunner();
 
     await queryRunner.connect();
     await queryRunner.startTransaction();
@@ -201,13 +201,14 @@ export class StudiesService {
    * @returns
    */
   async getFilepath(studyUid: string, seriesUid: string, imageUid: string) {
-
     // manually validating our input
-    const errors = await validate(plainToClass(ImageDto, {
-      studyInstanceUid: studyUid,
-      seriesInstanceUid: seriesUid,
-      sopInstanceUid: imageUid,
-    }));
+    const errors = await validate(
+      plainToClass(ImageDto, {
+        studyInstanceUid: studyUid,
+        seriesInstanceUid: seriesUid,
+        sopInstanceUid: imageUid,
+      }),
+    );
 
     if (errors.length > 0) {
       this.logger.error(`invalid input`, JSON.stringify(errors));

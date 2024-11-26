@@ -6,8 +6,8 @@ import { WadouriModule } from './wadouri/wadouri.module';
 import { WadorsModule } from './wadors/wadors.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
-import { getConnectionOptions } from 'typeorm';
 import { ScpModule } from './scp/scp.module';
+import { readFile, readFileSync } from 'fs';
 
 @Module({
   imports: [
@@ -15,10 +15,18 @@ import { ScpModule } from './scp/scp.module';
       rootPath: join(__dirname, '..', 'public'),
     }),
     TypeOrmModule.forRootAsync({
-      useFactory: async () =>
-        Object.assign(await getConnectionOptions(), {
+      useFactory: () => {
+        const configPath = join(process.cwd(), 'ormconfig.json');
+        const ormFile = readFileSync(configPath, 'utf8');
+        const ormconfig = JSON.parse(ormFile);
+        return {
+          type: ormconfig['type'],
+          host: ormconfig['host'],
+          database: ormconfig['database'],
+          synchronize: ['true', true].includes(ormconfig['synchronize']) ? true : false,
           autoLoadEntities: true,
-        }),
+        };
+      },
     }),
     StudiesModule,
     FilesModule,
