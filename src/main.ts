@@ -14,7 +14,7 @@ async function bootstrap() {
     }),
   );
   app.useGlobalPipes(new ValidationPipe());
-  const port = 5001;
+  const port = 5000;
   await app.listen(port);
   logger.verbose(`Http server listening on port: ${port}`);
 }
